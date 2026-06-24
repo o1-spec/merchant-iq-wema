@@ -386,7 +386,7 @@ export default function ProfilePage() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-              Financial Trust Passport
+              Business Trust Passport
             </h3>
             <p className="text-[11px] text-slate-500 leading-relaxed">
               Generate a shareable public passport certifying your business health score and consistency for lenders. Cash balances and transaction listings are completely masked.
@@ -421,7 +421,7 @@ export default function ProfilePage() {
                 className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                View Trust Passport
+                View Business Trust Passport
               </a>
             </div>
           </div>

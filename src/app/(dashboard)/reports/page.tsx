@@ -316,8 +316,8 @@ export default function ReportsPage() {
             {fmt(report.summary.netProfit)}
           </p>
           <p className="text-[10px] text-slate-400 font-bold mt-2.5">
-            Profit margin: {report.summary.totalRevenue > 0 
-              ? Math.round((report.summary.netProfit / report.summary.totalRevenue) * 100) 
+            Profit margin: {report.summary.totalRevenue > 0
+              ? Math.round((report.summary.netProfit / report.summary.totalRevenue) * 100)
               : 0}%
           </p>
         </div>
@@ -343,8 +343,8 @@ export default function ReportsPage() {
 
             {report.cashflow.warning && (
               <div className={`flex items-start gap-2.5 border rounded-xl p-3.5 text-xs leading-relaxed font-medium
-                ${report.cashflow.riskLevel === 'HIGH' 
-                  ? 'bg-red-50 border-red-200 text-red-700' 
+                ${report.cashflow.riskLevel === 'HIGH'
+                  ? 'bg-red-50 border-red-200 text-red-700'
                   : 'bg-amber-50 border-amber-200 text-amber-700'
                 }`}
               >
@@ -384,16 +384,15 @@ export default function ReportsPage() {
                 <span className="text-xs text-slate-500 font-bold uppercase tracking-wider text-[10px]">Credit Score</span>
                 <span className="text-2xl font-black text-slate-900 tabular-nums">{creditReadiness.score}</span>
               </div>
-              
+
               <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-1000 ${
-                    creditReadiness.riskLevel === 'LOW' 
-                      ? 'bg-primary' 
-                      : creditReadiness.riskLevel === 'MEDIUM' 
-                        ? 'bg-amber-500' 
+                <div
+                  className={`h-full transition-all duration-1000 ${creditReadiness.riskLevel === 'LOW'
+                      ? 'bg-primary'
+                      : creditReadiness.riskLevel === 'MEDIUM'
+                        ? 'bg-amber-500'
                         : 'bg-red-600'
-                  }`}
+                    }`}
                   style={{ width: `${scorePercent}%` }}
                 />
               </div>
@@ -456,7 +455,57 @@ export default function ReportsPage() {
         </div>
 
         <div className="space-y-6">
+          {/* Business Snapshot Card */}
           <div className="bg-white border border-card-border rounded-2xl p-6 space-y-4 transition-all duration-300">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-1.5 border-b border-card-border pb-3 uppercase tracking-wider">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              Business Snapshot
+            </h3>
+            <div className="space-y-3 font-semibold text-slate-700 text-xs">
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0 text-[10px]">✓</span>
+                <span className="flex-1">Revenue trend</span>
+                <span className={`text-[10px] font-extrabold uppercase ${report.summary.revenueTrendPercent >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {report.summary.revenueTrendPercent >= 0 ? 'Positive' : 'Declining'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0 text-[10px]">✓</span>
+                <span className="flex-1">Cash runway</span>
+                <span className="text-[10px] font-extrabold text-slate-600">
+                  {report.cashflow.runwayDays === 999 ? '30+ Days' : `${report.cashflow.runwayDays} Days`}
+                </span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0 text-[10px]">✓</span>
+                <span className="flex-1">Collections performance</span>
+                <span className="text-[10px] font-extrabold text-rose-650 uppercase">
+                  Webhook Ingestion
+                </span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0 text-[10px]">✓</span>
+                <span className="flex-1">AI recommendation</span>
+                <span className="text-[10px] font-extrabold text-primary uppercase">Active</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0 text-[10px]">✓</span>
+                <span className="flex-1">Credit readiness</span>
+                <span className="text-[10px] font-extrabold text-indigo-600 uppercase">
+                  {creditReadiness.riskLevel} Risk
+                </span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0 text-[10px]">✓</span>
+                <span className="flex-1">Trust score</span>
+                <span className="text-[10px] font-extrabold text-slate-800">
+                  {creditReadiness.score} / 850
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-card-border rounded-2xl p-6 space-y-4 transition-all duration-300 animate-in fade-in">
             <h3 className="font-bold text-slate-900 text-sm flex items-center gap-1.5 border-b border-card-border pb-3 uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
               Latest AI Insights

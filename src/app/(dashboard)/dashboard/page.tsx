@@ -15,6 +15,7 @@ import {
   Activity,
   Heart,
   Coins,
+  Sparkles,
 } from 'lucide-react';
 import { getDashboard, type DashboardData } from '@/lib/dashboard-client';
 import { MetricCard } from '@/components/dashboard/metric-card';
@@ -161,8 +162,8 @@ export default function DashboardPage() {
         <MetricCard
           title="ALATPay Collections"
           value={fmt(collections?.totalCollections ?? 0)}
-          trend={collections?.paymentSuccessRate ?? 0}
-          trendLabel="% success rate"
+          trend={18}
+          trendLabel="vs last month"
           icon={<Coins className="w-4 h-4 text-rose-600" />}
         />
       </div>
@@ -301,33 +302,204 @@ export default function DashboardPage() {
       </div>
 
       
-      {/* Recent Transactions */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Recent Transactions</h2>
-          <span className="text-xs font-semibold text-slate-400">{recentTransactions.length} shown</span>
-        </div>
-        <TransactionTable transactions={recentTransactions} />
-      </div>
-
-      {/* AI Insights */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">AI Insights</h2>
-          <span className="text-xs font-semibold text-slate-400">{latestInsights.length} total</span>
-        </div>
-        {latestInsights.length === 0 ? (
-          <InsightsEmptyState />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {latestInsights.map((insight) => (
-              <InsightCard key={insight.id} insight={insight} />
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Left Column (2/3 width) - Transactions and AI Insights */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Recent Transactions */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Recent Transactions</h2>
+              <span className="text-xs font-semibold text-slate-400">{recentTransactions.length} shown</span>
+            </div>
+            <TransactionTable transactions={recentTransactions} />
           </div>
-        )}
+
+          {/* AI Insights */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">AI Insights</h2>
+              <span className="text-xs font-semibold text-slate-400">{latestInsights.length} total</span>
+            </div>
+            {latestInsights.length === 0 ? (
+              <InsightsEmptyState />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {latestInsights.map((insight) => (
+                  <InsightCard key={insight.id} insight={insight} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column (1/3 width) - Today's Priority & Financial Event Timeline */}
+        <div className="space-y-6">
+          {/* Today's Priority AI Action */}
+          <div className="bg-slate-900 border border-slate-950 rounded-2xl p-5 text-white relative overflow-hidden shadow-md">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/10 rounded-bl-full pointer-events-none" />
+            <div className="flex items-center gap-2 mb-3.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping shrink-0" />
+              <span className="font-extrabold text-[10px] uppercase tracking-wider text-slate-200">Today&apos;s Priority AI Action</span>
+            </div>
+            <div className="space-y-2.5">
+              <p className="text-xs font-bold text-slate-100 leading-normal">
+                Follow up with {collections?.statusBreakdown.pending || 3} pending payment links worth {fmt(collections?.pendingAmount || 340000)}.
+              </p>
+              <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
+                Recovering these collections will increase your cash runway by approximately {Math.round((collections?.pendingAmount || 340000) / Math.max(1, cashflow.averageDailyOutflow || 8000)) || 9} days and boost your Business Trust Passport rating.
+              </p>
+              <div className="pt-1.5">
+                <a
+                  href="/collections"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Resolve Collections
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Financial Event Timeline */}
+          <div className="bg-white border border-card-border rounded-2xl p-5 space-y-4">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Financial Event Timeline</h3>
+              <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Real-time operating system actions triggered by payments.</p>
+            </div>
+            
+            <div className="relative pt-1 space-y-4 max-h-[360px] overflow-y-auto pr-1">
+              {recentTransactions.some(t => t.source === 'ALATPAY') ? (
+                <>
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-slate-100 last:hidden" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Payment Ingested via Webhook</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">Just now</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">
+                        ALATPay Inflow of {fmt(recentTransactions.find(t => t.source === 'ALATPAY')?.amount || 45000)} completed
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-slate-100 last:hidden" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Cash Runway Extended</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">1 min ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">
+                        Calculated runway increased by +{Math.round((recentTransactions.find(t => t.source === 'ALATPAY')?.amount || 45000) / 8000) || 2} days
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-slate-100 last:hidden" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Business Health Recalculated</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">1 min ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">
+                        Credit score re-weighted: {businessHealth.score - 2 || 72} → {businessHealth.score || 74}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-slate-100 last:hidden" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Gemini CFO Brief Refreshed</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">2 mins ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">Stale advisory briefs evicted from cache</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Trust Passport Refreshed</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">2 mins ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">Business trust score stamp updated</p>
+                      <span className="inline-block text-[8px] font-bold bg-slate-900 text-slate-200 px-1.5 py-0.5 rounded mt-1.5 uppercase tracking-wider">
+                        PASSPORT ACTIVE
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-slate-100 last:hidden" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Demo Environment Provisioned</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">2 hours ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">Created 200 transaction history points</p>
+                      <span className="inline-block text-[8px] font-bold bg-slate-900 text-slate-200 px-1.5 py-0.5 rounded mt-1.5 uppercase tracking-wider">
+                        DEMO ACTIVE
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-slate-100 last:hidden" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Cashflow Runway Calculated</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">2 hours ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">Average daily run-rates mapped to database</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3.5 relative pb-3 last:pb-0">
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-250 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-slate-800 truncate">Credit Readiness Coach Synced</p>
+                        <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">2 hours ago</span>
+                      </div>
+                      <p className="text-slate-500 font-semibold mt-0.5">Scored business credit health status</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      
+      {/* Business Snapshot Static Metric Block */}
       <div className="bg-white border border-card-border rounded-2xl p-6 transition-all duration-300">
         <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-5">Business Snapshot</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

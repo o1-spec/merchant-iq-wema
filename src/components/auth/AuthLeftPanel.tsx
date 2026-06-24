@@ -26,7 +26,7 @@ export function AuthLeftPanel() {
         {/* Highlight Badge */}
         <div>
           <span className="inline-block text-xs font-semibold text-blue-400 bg-blue-950/50 border border-blue-900/50 px-3 py-1 rounded-full">
-            AI CFO for African SMEs
+            AI Financial Operating System for ALATPay
           </span>
         </div>
 

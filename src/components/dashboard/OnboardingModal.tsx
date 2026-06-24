@@ -67,12 +67,12 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       ]
     },
     {
-      title: 'Capital Readiness & Trust Passport',
+      title: 'Capital Readiness & Business Trust Passport',
       description: 'Evaluate your borrowing readiness and share verified financial health records with lenders securely.',
       icon: Coins,
       color: 'text-amber-600 bg-amber-50 border-amber-100',
       features: [
-        'Shareable Trust Passport – copy a public link showing verified consistency without leaking cash balances.',
+        'Shareable Business Trust Passport – copy a public link showing verified consistency without leaking cash balances.',
         'SME Capital Catalog – qualify for business financing from Renmoney, FairMoney, Carbon, and RenSource.',
         'Underwriting Simulator – model repayments and submit underwriting packages for instant feedback.',
       ]

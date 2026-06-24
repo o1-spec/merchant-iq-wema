@@ -89,7 +89,7 @@ export default function PublicPassportPage() {
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 text-white">
         <div className="flex flex-col items-center gap-4">
           <RefreshCw className="w-8 h-8 text-primary animate-spin" />
-          <p className="text-slate-400 font-medium">Retrieving Verified Trust Record...</p>
+          <p className="text-slate-400 font-medium">Retrieving Business Trust Passport...</p>
         </div>
       </div>
     );
@@ -137,7 +137,7 @@ export default function PublicPassportPage() {
       <div className="w-full max-w-4xl flex justify-between items-center mb-6 print:hidden z-10">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-emerald-500" />
-          <span className="text-slate-300 text-sm font-semibold">Verified MerchantIQ Passport</span>
+          <span className="text-slate-300 text-sm font-semibold">Verified Business Trust Passport</span>
         </div>
         <div className="flex gap-3">
           <button
@@ -174,7 +174,7 @@ export default function PublicPassportPage() {
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-slate-100 uppercase mt-3 print:text-black">
-              Verified SME Trust Passport
+              Business Trust Passport
             </h1>
             <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider print:text-slate-600">
               Alternative Credit Underwriting & Verified Cashflow Ledger

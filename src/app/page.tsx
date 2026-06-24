@@ -219,8 +219,7 @@ export default function LandingPage() {
                 </h1>
 
                 <p className="text-lg text-slate-600 leading-relaxed mb-8">
-                  MerchantIQ turns transaction records into cashflow warnings, growth suggestions,
-                  and credit-readiness guidance for small business owners.
+                  MerchantIQ is an AI Financial Operating System that transforms every ALATPay payment into real-time business intelligence, helping SMEs improve cashflow, automate collections, and become credit-ready.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 mb-12">

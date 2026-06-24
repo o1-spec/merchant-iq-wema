@@ -3,8 +3,8 @@ import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MerchantIQ | AI CFO for African SMEs",
-  description: "Turn transaction data into cashflow forecasts, growth recommendations, and credit readiness insights.",
+  title: "MerchantIQ | AI Financial Operating System for ALATPay",
+  description: "An AI Financial Operating System that transforms every ALATPay payment into real-time business intelligence, helping SMEs improve cashflow, automate collections, and become credit-ready.",
 };
 
 export default function RootLayout({

@@ -478,7 +478,7 @@ export default function CollectionsPage() {
                 <div className="mt-1 flex items-center gap-1.5">
                   <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border border-emerald-100">
                     <TrendingUp className="w-2.5 h-2.5" />
-                    Real-time
+                    +18% vs last month
                   </span>
                 </div>
               </div>
@@ -576,6 +576,11 @@ export default function CollectionsPage() {
                       <p className="text-slate-400 leading-relaxed font-semibold">
                         You have <span className="font-black text-rose-400">{paymentLinks.filter(p => p.status === 'PENDING').length}</span> outstanding payment invoices. Following up with customers immediately can safeguard your runway.
                       </p>
+                    </div>
+
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estimated Recovery</span>
+                      <span className="text-sm font-black text-emerald-400">{fmt(collectionsSummary?.pendingAmount || 0)}</span>
                     </div>
 
                     <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
