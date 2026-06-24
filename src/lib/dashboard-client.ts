@@ -1,0 +1,109 @@
+import { apiGet, apiPatch } from "./api-client";
+
+export interface MerchantInfo {
+  id: string;
+  businessName: string;
+  businessType: string;
+  businessCategory: string;
+  location: string;
+  hasCompletedOnboarding: boolean;
+}
+
+export interface SummaryData {
+  totalRevenue: number;
+  totalExpenses: number;
+  netProfit: number;
+  cashPosition: number;
+  transactionCount: number;
+  bestSalesDay: string;
+  topRevenueCategory: string;
+  topExpenseCategory: string;
+  revenueTrendPercent: number;
+  expenseTrendPercent: number;
+}
+
+export interface CashflowData {
+  currentCash: number;
+  averageDailyInflow: number;
+  averageDailyOutflow: number;
+  runwayDays: number;
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
+  warning: string;
+}
+
+export interface BusinessHealthData {
+  score: number;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  strengths: string[];
+  weaknesses: string[];
+  nextSteps: string[];
+  breakdown: {
+    consistency: number;
+    cashflow: number;
+    stability: number;
+    growth: number;
+    credit: number;
+  };
+}
+
+export interface ForecastData {
+  forecastedMonthlyInflow: number;
+  forecastedMonthlyOutflow: number;
+  netForecastedPosition: number;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  warning: string;
+}
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  type: string;
+  category: string;
+  description: string | null;
+  date: string;
+  direction: "INFLOW" | "OUTFLOW";
+  status: string;
+  paymentMethod: string;
+  source: string;
+}
+
+export interface Insight {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  isPinned: boolean;
+  createdAt: string;
+}
+
+export interface CollectionsSummaryData {
+  totalCollections: number;
+  pendingAmount: number;
+  averagePaymentSize: number;
+  paymentSuccessRate: number;
+  statusBreakdown: {
+    successful: number;
+    pending: number;
+    failed: number;
+  };
+  topPayingCustomers: { customerName: string; amount: number }[];
+}
+
+export interface DashboardData {
+  merchant: MerchantInfo;
+  summary: SummaryData;
+  cashflow: CashflowData;
+  businessHealth: BusinessHealthData;
+  forecast: ForecastData;
+  recentTransactions: Transaction[];
+  latestInsights: Insight[];
+  collections: CollectionsSummaryData;
+}
+
+export function getDashboard(): Promise<DashboardData> {
+  return apiGet<DashboardData>("/api/dashboard");
+}
+
+export function completeOnboarding(): Promise<{ merchant: { id: string; hasCompletedOnboarding: boolean } }> {
+  return apiPatch<{ merchant: { id: string; hasCompletedOnboarding: boolean } }>("/api/merchant/onboarding");
+}

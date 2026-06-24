@@ -1,0 +1,93 @@
+import { Lightbulb, Pin, Trash2 } from 'lucide-react';
+import type { Insight } from '@/lib/dashboard-client';
+import { MarkdownFormatter } from '@/components/ui/MarkdownFormatter';
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
+const categoryColors: Record<string, string> = {
+  CASHFLOW: 'bg-blue-50 text-blue-700 border-blue-100',
+  REVENUE: 'bg-primary-light text-primary border-primary-light/40',
+  EXPENSE: 'bg-orange-50 text-orange-700 border-orange-100',
+  CREDIT: 'bg-purple-50 text-purple-700 border-purple-100',
+  GROWTH: 'bg-teal-50 text-teal-700 border-teal-100',
+};
+
+export function InsightCard({
+  insight,
+  onPin,
+  onDelete,
+}: {
+  insight: Insight;
+  onPin?: () => void;
+  onDelete?: () => void;
+}) {
+  const colorClass = categoryColors[insight.category] ?? 'bg-slate-50 text-slate-600 border-slate-200';
+
+  return (
+    <div className="group bg-white border border-card-border rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Lightbulb className="w-4 h-4 text-amber-400 shrink-0" />
+          <p className="text-sm font-semibold text-slate-900 leading-snug">{insight.title}</p>
+        </div>
+        
+        <div className="flex items-center gap-1 shrink-0">
+          {onPin && (
+            <button
+              onClick={(e) => { e.preventDefault(); onPin(); }}
+              className={`p-1 rounded hover:bg-slate-100 transition-colors ${insight.isPinned ? 'text-primary' : 'text-slate-400 md:opacity-0 group-hover:opacity-100'}`}
+              title={insight.isPinned ? "Unpin insight" : "Pin insight"}
+            >
+              <Pin className="w-3.5 h-3.5" fill={insight.isPinned ? "currentColor" : "none"} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => { e.preventDefault(); onDelete(); }}
+              className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors md:opacity-0 group-hover:opacity-100"
+              title="Delete insight"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {!onPin && insight.isPinned && (
+            <Pin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+          )}
+        </div>
+      </div>
+
+
+      <div className="text-sm text-slate-600 leading-relaxed">
+        <MarkdownFormatter content={insight.content} />
+      </div>
+
+      <div className="flex items-center justify-between pt-1">
+        <span className={`text-[10px] font-semibold border px-2 py-0.5 rounded-full uppercase tracking-wider ${colorClass}`}>
+          {insight.category}
+        </span>
+        <span className="text-[11px] text-slate-400 font-medium">{timeAgo(insight.createdAt)}</span>
+      </div>
+    </div>
+  );
+}
+
+export function InsightsEmptyState() {
+  return (
+    <div className="bg-white border border-card-border rounded-2xl p-8 flex flex-col items-center justify-center text-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
+        <Lightbulb className="w-5 h-5 text-amber-400" />
+      </div>
+      <p className="text-sm font-semibold text-slate-700">No insights yet</p>
+      <p className="text-xs text-slate-450 max-w-xs font-medium leading-relaxed">
+        Upload transaction data or connect your POS to start receiving AI-powered business insights.
+      </p>
+    </div>
+  );
+}

@@ -1,0 +1,173 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         String    @default("MERCHANT") // MERCHANT, ADMIN, JUDGE, etc.
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  merchant     Merchant?
+}
+
+model Merchant {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName     String
+  businessType     String
+  businessCategory String
+  location         String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  transactions     Transaction[]
+  insights         Insight[]
+  creditProfile    CreditProfile?
+  currency         String            @default("NGN")
+  alertThreshold   Float             @default(10000.0)
+  smsNotifications Boolean           @default(false)
+  hasCompletedOnboarding Boolean   @default(false)
+  loanApplications LoanApplication[]
+  chatMessages     ChatMessage[]
+  paymentLinks     PaymentLink[]
+  virtualAccounts  VirtualAccount[]
+}
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  role       String   // "user" or "model"
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([merchantId])
+  @@index([createdAt])
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  merchantId    String
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  amount        Float
+  type          String   // INCOME, EXPENSE
+  category      String   // Sales, Inventory, Rent, Utilities, etc.
+  description   String?
+  date          DateTime @default(now())
+  source        String   // CSV, DEMO, POS, BANK_STATEMENT
+  paymentMethod String   // CASH, TRANSFER, POS, WALLET
+  direction     String   // INFLOW, OUTFLOW
+  status        String   // COMPLETED, PENDING, FAILED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paymentLinkId    String?
+  paymentLink      PaymentLink?     @relation(fields: [paymentLinkId], references: [id], onDelete: SetNull)
+  virtualAccountId String?
+  virtualAccount   VirtualAccount?  @relation(fields: [virtualAccountId], references: [id], onDelete: SetNull)
+  externalReference String?
+
+  @@index([merchantId])
+  @@index([date])
+}
+
+model Insight {
+  id         String   @id @default(uuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  title      String
+  content    String   // markdown analysis details
+  category   String   // CASH_FLOW, CREDIT, TAX, GROWTH
+  type       String   // WARNING, OPPORTUNITY, INFO
+  isPinned   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([merchantId])
+}
+
+model CreditProfile {
+  id                       String   @id @default(uuid())
+  merchantId               String   @unique
+  merchant                 Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  creditScore              Int
+  riskRating               String   // LOW, MEDIUM, HIGH
+  debtServiceCoverageRatio Float?
+  totalDebt                Float?
+  recommendedLoanAmount    Float?
+  analysisDetails          String?  // JSON string
+  updatedAt                DateTime @updatedAt
+}
+
+model LoanApplication {
+  id              String   @id @default(uuid())
+  merchantId      String
+  merchant        Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  lenderId        String
+  lenderName      String
+  requestedAmount Float
+  status          String   // PENDING, APPROVED, REJECTED
+  packagedProfile String   // JSON string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([merchantId])
+}
+
+model StatementTemplate {
+  id                String   @id @default(uuid())
+  /// Sorted, lowercased, pipe-joined header columns. Used as a unique fingerprint.
+  /// e.g. "amount|balance|credit|date|debit|narration"
+  headersSignature  String   @unique
+  /// Friendly name inferred by AI e.g. "GTBank", "Moniepoint POS"
+  detectedBankName  String?
+  /// 0-indexed row where transaction table headers are found (skip metadata rows above)
+  headerRowIndex    Int
+  dateColumn        String
+  descriptionColumn String
+  /// Set when bank uses a single signed-value amount column
+  amountColumn      String?
+  /// Set when bank uses split Debit/Credit columns
+  inflowColumn      String?
+  outflowColumn     String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model PaymentLink {
+  id           String   @id @default(uuid())
+  merchantId   String
+  merchant     Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  customerName String
+  amount       Float
+  purpose      String
+  reference    String   @unique
+  status       String   @default("PENDING") // PENDING, PAID, FAILED, EXPIRED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  transactions Transaction[]
+
+  @@index([merchantId])
+}
+
+model VirtualAccount {
+  id            String   @id @default(uuid())
+  merchantId    String
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  customerName  String
+  accountNumber String   @unique
+  bankName      String   @default("Wema / ALAT")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  transactions  Transaction[]
+
+  @@index([merchantId])
+}
