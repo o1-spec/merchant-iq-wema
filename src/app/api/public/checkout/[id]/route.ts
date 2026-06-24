@@ -4,10 +4,10 @@ import { successResponse, errorResponse } from '@/lib/response';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const paymentLink = await prisma.paymentLink.findUnique({
       where: { id },
       include: {
