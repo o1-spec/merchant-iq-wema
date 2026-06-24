@@ -23,7 +23,7 @@ const SCENARIOS = [
     baseInterestRate: 3.5,
     maxLoanMultiplier: 1.5,
     repaymentTerm: '3 to 24 months',
-    description: 'Estimated capacity achievable if Business Health improves to 65+.',
+    description: 'Estimated capacity achievable if Business Trust Score improves to 658+.',
   },
   {
     id: 'tier-expansion',
@@ -33,7 +33,7 @@ const SCENARIOS = [
     baseInterestRate: 2.8,
     maxLoanMultiplier: 2.5,
     repaymentTerm: '6 to 36 months',
-    description: 'Estimated capacity achievable if Business Health improves to 80+.',
+    description: 'Estimated capacity achievable if Business Trust Score improves to 740+.',
   },
 ];
 
@@ -144,8 +144,8 @@ export async function GET(req: NextRequest) {
         description: l.description,
         eligible,
         reason: eligible 
-          ? 'You meet the minimum health requirements for this scenario.' 
-          : `Requires a Business Health score of ${l.minScore} (Current: ${businessHealth.score}).`,
+          ? 'You meet the minimum requirements for this scenario.' 
+          : `Requires a Business Trust Score of ${300 + Math.round((l.minScore / 100) * 550)} (Current: ${300 + Math.round((businessHealth.score / 100) * 550)}).`,
       };
     });
 
@@ -181,7 +181,7 @@ export async function GET(req: NextRequest) {
       minCapacity,
       maxCapacity,
       lenders: offers,
-      applications: applications.map(app => ({
+      applications: applications.map((app: any) => ({
         id: app.id,
         lenderId: app.lenderId,
         lenderName: app.lenderName,

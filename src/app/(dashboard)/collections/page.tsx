@@ -124,6 +124,12 @@ export default function CollectionsPage() {
   const [csvResponse, setCsvResponse] = useState<UploadResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    amount: number;
+    customerName: string;
+  } | null>(null);
+
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
   async function loadData() {
@@ -249,6 +255,11 @@ export default function CollectionsPage() {
       if (res.ok && json.success) {
         success(`Inbound transfer of ${fmt(parseFloat(transferAmount))} processed successfully!`);
         setShowTransferModal(false);
+        setNotification({
+          show: true,
+          amount: parseFloat(transferAmount),
+          customerName: selectedAccount.customerName || 'Customer',
+        });
         setTransferAmount('');
         setSelectedAccount(null);
         loadData();
@@ -334,8 +345,8 @@ export default function CollectionsPage() {
   const validateAndSetFile = (selectedFile: File) => {
     setCsvError(null);
     if (!selectedFile.name.toLowerCase().endsWith('.csv') &&
-        !selectedFile.name.toLowerCase().endsWith('.xls') &&
-        !selectedFile.name.toLowerCase().endsWith('.xlsx')) {
+      !selectedFile.name.toLowerCase().endsWith('.xls') &&
+      !selectedFile.name.toLowerCase().endsWith('.xlsx')) {
       const msg = 'Invalid file format. Only .csv, .xls, and .xlsx files are accepted.';
       setCsvError(msg);
       toastError(msg);
@@ -420,7 +431,7 @@ export default function CollectionsPage() {
 
   return (
     <div className="space-y-6 max-w-[1200px]">
-      
+
       {/* Page Header */}
       <div className="pb-4 border-b border-card-border flex items-center justify-between gap-4">
         <div>
@@ -505,7 +516,7 @@ export default function CollectionsPage() {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            
+
             {/* Payment Transactions Table */}
             <div className="lg:col-span-2 bg-white border border-card-border rounded-2xl p-5 space-y-4">
               <div>
@@ -563,7 +574,7 @@ export default function CollectionsPage() {
                   <Sparkles className="w-5 h-5 text-rose-400 shrink-0" />
                   <span className="font-extrabold text-sm uppercase tracking-wider text-slate-200">AI Collections Assistant</span>
                 </div>
-                
+
                 {paymentLinks.filter(p => p.status === 'PENDING').length === 0 ? (
                   <div className="space-y-1.5 text-xs text-slate-400">
                     <p className="font-bold text-slate-100">Zero outstanding invoices!</p>
@@ -617,7 +628,7 @@ export default function CollectionsPage() {
               <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Generate Payment Link</h2>
               <p className="text-xs text-slate-450 mt-0.5">Generate an invoice link to share via WhatsApp, SMS, or Email.</p>
             </div>
-            
+
             <form onSubmit={handleCreateLink} className="space-y-4 text-xs font-semibold">
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Customer Name</label>
@@ -677,7 +688,7 @@ export default function CollectionsPage() {
           {/* Links list */}
           <div className="lg:col-span-2 bg-white border border-card-border rounded-2xl p-5 space-y-4">
             <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Active Payment Links</h2>
-            
+
             {paymentLinks.length === 0 ? (
               <div className="border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center space-y-2">
                 <FileText className="w-8 h-8 text-slate-350 mx-auto" />
@@ -692,10 +703,10 @@ export default function CollectionsPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-extrabold text-slate-800 text-sm">{link.customerName}</span>
                         <span className={`text-[9px] font-bold border px-2 py-0.5 rounded-full uppercase tracking-wider
-                          ${link.status === 'PAID' 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                            : link.status === 'PENDING' 
-                              ? 'bg-amber-50 text-amber-700 border-amber-100' 
+                          ${link.status === 'PAID'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                            : link.status === 'PENDING'
+                              ? 'bg-amber-50 text-amber-700 border-amber-100'
                               : 'bg-red-50 text-red-600 border-red-100'
                           }`}
                         >
@@ -711,7 +722,7 @@ export default function CollectionsPage() {
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Amount</p>
                         <p className="text-base font-black text-rose-600 mt-0.5">{fmt(link.amount)}</p>
                       </div>
-                      
+
                       <div className="flex items-center gap-1.5 self-center">
                         <button
                           onClick={() => copyPaymentLink(link.id)}
@@ -849,8 +860,8 @@ export default function CollectionsPage() {
                   onDrop={handleDrop}
                   onClick={triggerFileInput}
                   className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all flex flex-col items-center justify-center
-                    ${isDragActive 
-                      ? 'border-primary bg-primary-light/40' 
+                    ${isDragActive
+                      ? 'border-primary bg-primary-light/40'
                       : 'border-slate-200 hover:border-slate-350 hover:bg-slate-50/50'
                     } ${uploadingCsv ? 'pointer-events-none opacity-60' : ''}`}
                 >
@@ -1080,6 +1091,52 @@ export default function CollectionsPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Real-time Payment Notification Overlay */}
+      {notification?.show && (
+        <div className="fixed bottom-5 right-5 z-100 bg-slate-900 border border-slate-800 p-5 rounded-2xl w-80 shadow-2xl flex flex-col gap-3.5 animate-in slide-in-from-bottom duration-300 ease-out text-white">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 animate-bounce" />
+              </div>
+              <div>
+                <h4 className="text-[10px] font-bold tracking-wider uppercase text-emerald-400">Payment Received</h4>
+                <p className="text-base font-black mt-0.5 tabular-nums">{fmt(notification.amount)}</p>
+                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">from {notification.customerName}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setNotification(null)}
+              className="text-slate-400 hover:text-slate-200 cursor-pointer font-bold text-xs"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="text-[11px] text-slate-250 font-semibold border-t border-slate-800/80 pt-3 space-y-2">
+            <p className="text-slate-500 uppercase tracking-widest text-[9px] font-extrabold mb-1">Downstream Event Logs</p>
+            <div className="space-y-2 font-medium">
+              <div className="flex items-center gap-2 text-emerald-350">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Cash runway increased by 3 days</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-350">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Business Trust Score +4</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-350">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Forecast updated</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-350">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>AI Brief refreshed</span>
+              </div>
+            </div>
           </div>
         </div>
       )}

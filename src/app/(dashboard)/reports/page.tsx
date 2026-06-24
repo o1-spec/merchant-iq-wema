@@ -132,7 +132,7 @@ export default function ReportsPage() {
       const data = await getBusinessHealthReport();
       setReport(data);
       if (isRefresh) {
-        success('Business health report refreshed successfully.');
+        success('Business Trust Snapshot Report refreshed successfully.');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Could not retrieve business report.';
@@ -208,7 +208,7 @@ export default function ReportsPage() {
         `
       }} />      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-card-border pb-4 print-hide">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Business Health Report</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Business Trust Snapshot Report</h1>
           <p className="text-slate-500 text-sm mt-1.5 font-medium">
             A complete view of your cashflow, performance, credit readiness, and AI insights.
           </p>
@@ -234,7 +234,7 @@ export default function ReportsPage() {
       <div className="hidden print:block border-b border-slate-200 pb-4 mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">MerchantIQ Business Health Report</h1>
+            <h1 className="text-2xl font-bold text-slate-900">MerchantIQ Business Trust Snapshot Report</h1>
             <p className="text-xs text-slate-500 mt-1">Generated automatically on {fmtDate(report.generatedAt)}</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white text-base">

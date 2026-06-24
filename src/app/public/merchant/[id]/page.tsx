@@ -292,8 +292,8 @@ export default function PublicPassportPage() {
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black text-white print:text-black">{data.businessHealth.score}</span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider print:text-slate-600">Health Score</span>
+                  <span className="text-2xl font-black text-white print:text-black">{300 + Math.round((data.businessHealth.score / 100) * 550)}</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider print:text-slate-600">Trust Score</span>
                 </div>
               </div>
 

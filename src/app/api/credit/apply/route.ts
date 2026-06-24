@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
     if (businessHealth.score < scenario.minScore) {
       status = 'REJECTED';
-      rejectionReason = `Business Health score (${businessHealth.score}) is below the minimum required score of ${scenario.minScore} for this tier.`;
+      rejectionReason = `Business Trust Score (${300 + Math.round((businessHealth.score / 100) * 550)}) is below the minimum required score of ${300 + Math.round((scenario.minScore / 100) * 550)} for this tier.`;
     } else if (requestedAmount > maxAmount * 1.1) {
       status = 'REJECTED';
       rejectionReason = `Requested amount exceeds the maximum qualified capacity for this scenario (Capacity: ₦${Math.round(maxAmount).toLocaleString()}).`;

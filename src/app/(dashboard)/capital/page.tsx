@@ -256,7 +256,7 @@ export default function CapitalPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Capital Readiness Center</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            Evaluate your ledger trust indicators, identify operational blocks, and simulate borrowing limits.
+            Evaluate your ledger trust indicators, identify operational blocks, simulate repayment scenarios, and determine how many days of average sales are required to comfortably cover each monthly repayment.
           </p>
         </div>
         <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2">
@@ -271,11 +271,11 @@ export default function CapitalPage() {
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-indigo-500" />
-              Business Health
+              Business Trust Score
             </p>
             <div className="flex items-baseline gap-1 mt-2.5">
-              <span className="text-3xl font-black text-slate-900">{creditScore}</span>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">/ 100</span>
+              <span className="text-3xl font-black text-slate-900">{300 + Math.round((creditScore / 100) * 550)}</span>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">300-850</span>
             </div>
           </div>
           <span className={`inline-block text-[9px] font-extrabold border px-2 py-0.5 rounded-full uppercase tracking-wider w-fit ${riskBadge[riskLevel]}`}>
@@ -374,7 +374,7 @@ export default function CapitalPage() {
               </div>
 
               <div className="pt-2 text-[10px] text-indigo-300 font-bold flex items-center gap-1.5 uppercase tracking-wider">
-                <span>💡 Target score: Improve Business Health above 65 to unlock growth capital scenarios.</span>
+                <span>💡 Target score: Improve Business Trust Score above 658 to unlock growth capital scenarios.</span>
               </div>
             </div>
           )}
@@ -387,7 +387,7 @@ export default function CapitalPage() {
                   <TrendingUp className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-850 text-sm">Business Health History Trend</h3>
+                  <h3 className="font-extrabold text-slate-850 text-sm">Business Trust Score History Trend</h3>
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Monthly Ledger Progression</p>
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function CapitalPage() {
                         textAnchor="middle"
                         className="text-[10px] font-extrabold text-slate-800"
                       >
-                        {p.score}
+                        {300 + Math.round((p.score / 100) * 550)}
                       </text>
                       {/* Month label below chart */}
                       <text
@@ -496,7 +496,7 @@ export default function CapitalPage() {
                   <Activity className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-sm">Business Health Breakdown</h3>
+                  <h3 className="font-extrabold text-slate-800 text-sm">Business Trust Score Breakdown</h3>
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Dynamic Score Allocation</p>
                 </div>
               </div>
@@ -862,7 +862,7 @@ export default function CapitalPage() {
                     <div className="space-y-2">
                       <h4 className="text-lg font-black text-slate-900">Simulation Passed!</h4>
                       <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto font-medium">
-                        Your business health logs successfully qualify for the <strong>{selectedLender.name}</strong> scenario metrics.
+                        Your Business Trust Score logs successfully qualify for the <strong>{selectedLender.name}</strong> scenario metrics.
                       </p>
                     </div>
 
