@@ -228,12 +228,12 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Business Health Details Card */}
+        {/* Business Trust Score Details Card */}
         <div className="bg-white border border-card-border rounded-2xl p-6 space-y-4 transition-all duration-300 flex flex-col justify-between group hover:shadow-sm">
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-indigo-500" />
-              Business Health Score
+              Business Trust Score
             </p>
             <div className="flex items-center gap-4 mt-3">
               <div className="relative flex items-center justify-center">
@@ -408,7 +408,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1 min-w-0 text-xs">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="font-bold text-slate-800 truncate">Business Health Recalculated</p>
+                        <p className="font-bold text-slate-800 truncate">Business Trust Score Recalculated</p>
                         <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">1 min ago</span>
                       </div>
                       <p className="text-slate-500 font-semibold mt-0.5">

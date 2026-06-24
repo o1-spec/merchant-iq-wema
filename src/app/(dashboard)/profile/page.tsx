@@ -389,7 +389,7 @@ export default function ProfilePage() {
               Business Trust Passport
             </h3>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Generate a shareable public passport certifying your business health score and consistency for lenders. Cash balances and transaction listings are completely masked.
+              Generate a shareable public passport certifying your business trust score and consistency for lenders. Cash balances and transaction listings are completely masked.
             </p>
             <div className="space-y-2">
               <button

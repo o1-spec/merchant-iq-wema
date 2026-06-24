@@ -799,6 +799,14 @@ export default function CapitalPage() {
                       <span className="text-slate-850 font-bold">Estimated Monthly Repayment</span>
                       <span className="text-base font-black text-slate-900 tabular-nums">{fmt(monthlyRepayment)}</span>
                     </div>
+                    <div className="flex justify-between pt-2.5 border-t border-slate-200">
+                      <span className="text-slate-400 font-medium">Payment Inflow Coverage</span>
+                      <span className="text-slate-900 font-bold tabular-nums">
+                        {monthlyRevenueEst > 0 
+                          ? `${(monthlyRepayment / (monthlyRevenueEst / 30)).toFixed(1)} Days of Sales` 
+                          : 'N/A'}
+                      </span>
+                    </div>
                   </div>
                 </div>
 

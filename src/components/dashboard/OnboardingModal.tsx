@@ -22,7 +22,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       color: 'text-primary bg-primary-light border-primary-light/50',
       features: [
         'Automated collections bookkeeping – sync ALATPay transactions directly.',
-        'Alternative Business Health Score – prove your creditworthiness to lenders.',
+        'Alternative Business Trust Score – prove your creditworthiness to lenders.',
         'Simple English – zero complex corporate financial jargon.',
       ]
     },
