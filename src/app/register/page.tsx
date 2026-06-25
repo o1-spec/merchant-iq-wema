@@ -7,7 +7,7 @@ import { Loader2, AlertCircle, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { register } from '@/lib/auth-client';
 import { AuthLeftPanel } from '@/components/auth/AuthLeftPanel';
 
-const BUSINESS_TYPES = ['Retail', 'Food & Drinks', 'Fashion', 'POS Agent', 'Services', 'Other'];
+const BUSINESS_TYPES = ['Retail', 'Wholesale'];
 const BUSINESS_CATEGORIES = [
   'Convenience & Groceries',
   'Restaurant / Food Vendor',
@@ -15,6 +15,12 @@ const BUSINESS_CATEGORIES = [
   'POS / Agent Banking',
   'Electronics',
   'Beauty & Personal Care',
+  'Insurance Broker / Agency',
+  'Logistics & Transportation',
+  'Healthcare & Pharmacy',
+  'Services & Consulting',
+  'Agriculture & Farm Produce',
+  'Education & Training',
   'Other',
 ];
 
