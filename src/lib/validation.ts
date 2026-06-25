@@ -72,3 +72,26 @@ export const loanApplicationSchema = z.object({
 
 export type LoanApplicationInput = z.infer<typeof loanApplicationSchema>;
 
+export const alatpayWebhookSchema = z.object({
+  event: z.string(),
+  type: z.enum(['payment_link', 'virtual_account']),
+  id: z.string().min(1, 'ID is required'),
+  reference: z.string().min(1, 'Reference is required'),
+  amount: z.union([z.number(), z.string()]).transform((val) => {
+    const num = typeof val === 'string' ? parseFloat(val) : val;
+    if (isNaN(num)) throw new Error('Amount must be a valid number');
+    return num;
+  }),
+  paymentMethod: z.string().optional().nullable(),
+});
+
+export type AlatpayWebhookInput = z.infer<typeof alatpayWebhookSchema>;
+
+export const paymentLinkCreateSchema = z.object({
+  customerName: z.string().min(2, 'Customer name must be at least 2 characters'),
+  amount: z.number().positive('Amount must be positive'),
+  purpose: z.string().optional().default('Goods & Services'),
+});
+
+export type PaymentLinkCreateInput = z.infer<typeof paymentLinkCreateSchema>;
+

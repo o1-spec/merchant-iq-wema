@@ -1,34 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { successResponse, errorResponse } from '@/lib/response';
+import { alatpayWebhookSchema } from '@/lib/validation';
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { event, type, reference, amount, paymentMethod, id } = body;
+    const bodyText = await req.text();
 
-    if (!reference || !amount || !type || !id) {
-      return errorResponse('Missing required webhook fields', 400);
+    // Verify webhook signature in production environment
+    const signature = req.headers.get('x-alatpay-signature');
+    const webhookSecret = process.env.ALATPAY_WEBHOOK_SECRET;
+
+    if (process.env.NODE_ENV === 'production') {
+      if (!signature || !webhookSecret) {
+        return errorResponse('Unauthorized: Missing signature or webhook secret key', 401);
+      }
+      const computedHash = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(bodyText)
+        .digest('hex');
+      if (computedHash !== signature) {
+        return errorResponse('Unauthorized: Webhook signature verification failed', 401);
+      }
     }
 
-    // Webhook Idempotency Check
-    const existingTx = await prisma.transaction.findFirst({
-      where: { externalReference: reference },
-    });
-
-    if (existingTx) {
-      console.log(`Webhook duplicate detected for reference: ${reference}. Ignoring.`);
-      return successResponse({ message: 'Duplicate webhook ignored successfully' });
+    const body = JSON.parse(bodyText);
+    const validation = alatpayWebhookSchema.safeParse(body);
+    if (!validation.success) {
+      return errorResponse('Validation error', 400, validation.error.flatten().fieldErrors);
     }
+
+    const validated = validation.data;
 
     let merchantId = '';
     let paymentLinkId: string | null = null;
     let virtualAccountId: string | null = null;
     let description = '';
 
-    if (type === 'payment_link') {
+    if (validated.type === 'payment_link') {
       const paymentLink = await prisma.paymentLink.findUnique({
-        where: { id },
+        where: { id: validated.id },
       });
       if (!paymentLink) {
         return errorResponse('Payment link not found', 404);
@@ -36,15 +48,9 @@ export async function POST(req: NextRequest) {
       merchantId = paymentLink.merchantId;
       paymentLinkId = paymentLink.id;
       description = `Payment from customer via ALATPay Link (Ref: ${paymentLink.purpose})`;
-
-      // Update payment link status to PAID
-      await prisma.paymentLink.update({
-        where: { id },
-        data: { status: 'PAID' },
-      });
-    } else if (type === 'virtual_account') {
+    } else if (validated.type === 'virtual_account') {
       const virtualAccount = await prisma.virtualAccount.findUnique({
-        where: { id },
+        where: { id: validated.id },
       });
       if (!virtualAccount) {
         return errorResponse('Virtual account not found', 404);
@@ -56,35 +62,51 @@ export async function POST(req: NextRequest) {
       return errorResponse('Invalid webhook collection type', 400);
     }
 
-    // Create the Transaction record representing the successful inflow
-    await prisma.transaction.create({
-      data: {
-        merchantId,
-        amount: parseFloat(amount),
-        type: 'INCOME',
-        category: 'Collections',
-        description,
-        source: 'ALATPAY',
-        paymentMethod: paymentMethod || 'TRANSFER',
-        direction: 'INFLOW',
-        status: 'COMPLETED',
-        externalReference: reference,
-        paymentLinkId,
-        virtualAccountId,
-      },
+    // Run database updates inside an atomic ACID transaction
+    await prisma.$transaction(async (tx) => {
+      // Create the Inbound Transaction Ledger record (externalReference has Unique index)
+      await tx.transaction.create({
+        data: {
+          merchantId,
+          amount: validated.amount,
+          type: 'INCOME',
+          category: 'Collections',
+          description,
+          source: 'ALATPAY',
+          paymentMethod: validated.paymentMethod || 'TRANSFER',
+          direction: 'INFLOW',
+          status: 'COMPLETED',
+          externalReference: validated.reference,
+          paymentLinkId,
+          virtualAccountId,
+        },
+      });
+
+      // If it's a payment link checkout, update status to PAID
+      if (validated.type === 'payment_link' && paymentLinkId) {
+        await tx.paymentLink.update({
+          where: { id: paymentLinkId },
+          data: { status: 'PAID' },
+        });
+      }
+
+      // Evict merchant's unpinned AI Insights to force AI recalculations on dashboard load
+      await tx.insight.deleteMany({
+        where: {
+          merchantId,
+          isPinned: false,
+        },
+      });
     });
 
-    // Evict merchant's unpinned AI Insights to force updates
-    await prisma.insight.deleteMany({
-      where: {
-        merchantId,
-        isPinned: false,
-      },
-    });
-
-    console.log(`Successfully ingested ALATPay payment event for reference: ${reference}`);
+    console.log(`Successfully ingested ALATPay payment event for reference: ${validated.reference}`);
     return successResponse({ message: 'Webhook processed successfully' });
-  } catch (err) {
+  } catch (err: any) {
+    // Handle unique constraint violations gracefully for idempotency (Prisma Error P2002)
+    if (err.code === 'P2002' || err.message?.includes('Unique constraint failed')) {
+      console.log(`Webhook duplicate detected. Reference already exists. Ignoring.`);
+      return successResponse({ message: 'Duplicate webhook ignored successfully' });
+    }
     const error = err as Error;
     console.error('Webhook processing error:', error);
     return errorResponse(error.message || 'Internal server error', 500);

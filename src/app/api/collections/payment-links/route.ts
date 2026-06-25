@@ -2,13 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
-import { z } from 'zod';
-
-const createPaymentLinkSchema = z.object({
-  customerName: z.string().min(1, 'Customer name is required'),
-  amount: z.number().positive('Amount must be positive'),
-  purpose: z.string().min(1, 'Purpose is required'),
-});
+import { paymentLinkCreateSchema } from '@/lib/validation';
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,7 +34,7 @@ export async function POST(req: NextRequest) {
     const merchant = user.merchant;
 
     const body = await req.json();
-    const result = createPaymentLinkSchema.safeParse(body);
+    const result = paymentLinkCreateSchema.safeParse(body);
     if (!result.success) {
       return errorResponse('Validation error', 400, result.error.flatten().fieldErrors);
     }

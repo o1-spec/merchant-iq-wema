@@ -4,7 +4,12 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { prisma } from './prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'hackathon-dev-secret-key-replace-in-production-123456';
+const JWT_SECRET = process.env.JWT_SECRET || (() => {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_SECRET environment variable is required in production.');
+  }
+  return 'hackathon-dev-secret-key-replace-in-production-123456';
+})();
 const COOKIE_NAME = 'merchantiq_auth';
 
 export async function hashPassword(password: string): Promise<string> {
@@ -32,7 +37,7 @@ export async function setAuthCookie(token: string): Promise<void> {
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: 'strict',
     path: '/',
     maxAge: 60 * 60 * 24 * 7, 
   });

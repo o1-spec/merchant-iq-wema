@@ -74,7 +74,7 @@ model Transaction {
   paymentLink      PaymentLink?     @relation(fields: [paymentLinkId], references: [id], onDelete: SetNull)
   virtualAccountId String?
   virtualAccount   VirtualAccount?  @relation(fields: [virtualAccountId], references: [id], onDelete: SetNull)
-  externalReference String?
+  externalReference String? @unique
 
   @@index([merchantId])
   @@index([date])
