@@ -46,13 +46,13 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     },
     {
       title: 'Review business dashboard',
-      description: 'We instantly calculate key metrics: total revenue, expenses, net profit, cashflow runway, and alternative credit ratings.',
+      description: 'We instantly calculate key metrics: total revenue, expenses, net profit, cashflow runway, and alternative credit readiness ratings.',
       icon: BarChart3,
       color: 'text-emerald-600 bg-emerald-50 border-emerald-100',
       features: [
         'Runway forecast – see exactly how many days your cash position will last.',
         '30-Day Cash Forecast – project month-end cash position based on transaction trends.',
-        'Circular Health Dial – track your business health rating out of 100.',
+        'Circular Trust Dial – track your business trust score rating (300-850 scale).',
       ]
     },
     {
@@ -74,7 +74,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       features: [
         'Shareable Business Trust Passport – copy a public link showing verified consistency without leaking cash balances.',
         'SME Capital Catalog – qualify for business financing from Renmoney, FairMoney, Carbon, and RenSource.',
-        'Underwriting Simulator – model repayments and submit underwriting packages for instant feedback.',
+        'Credit Readiness Simulator – model repayments and submit credit readiness packages for instant feedback.',
       ]
     }
   ];

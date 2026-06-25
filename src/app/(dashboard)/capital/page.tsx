@@ -338,7 +338,7 @@ export default function CapitalPage() {
                 <div className="space-y-1">
                   <h3 className="text-sm font-extrabold tracking-tight uppercase">Why Your Funding Capacity is Limited</h3>
                   <p className="text-xs text-slate-400 font-medium">
-                    Underwriting models evaluate cashflow health based on ledger consistency, velocity, and reserves.
+                    Credit readiness models evaluate cashflow health based on ledger consistency, velocity, and reserves.
                   </p>
                 </div>
               </div>
@@ -549,7 +549,7 @@ export default function CapitalPage() {
                 {/* Trust/Credit */}
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-500">Underwriting Trust</span>
+                    <span className="text-slate-500">Credit Readiness</span>
                     <span className="text-slate-800">{businessHealth.breakdown.credit} <span className="text-slate-400 font-medium">/ 20</span></span>
                   </div>
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -560,7 +560,7 @@ export default function CapitalPage() {
             </div>
 
             <div className="pt-4 border-t border-slate-50 text-[10px] text-slate-400 font-semibold leading-relaxed">
-              * Score weights: Consistency (20%), Operating Cashflow (30%), Stability (15%), Growth Trends (15%), Underwriting/Credit (20%).
+              * Score weights: Consistency (20%), Operating Cashflow (30%), Stability (15%), Growth Trends (15%), Credit Readiness (20%).
             </div>
           </div>
         </div>
@@ -613,7 +613,7 @@ export default function CapitalPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Underwriting Rate</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Simulated Interest Rate</p>
                       <p className="text-base font-extrabold text-slate-900 mt-0.5 flex items-center gap-0.5">
                         {lender.interestRate}% <span className="text-[10px] text-slate-400 font-medium">/ mo</span>
                       </p>
@@ -784,7 +784,7 @@ export default function CapitalPage() {
                       <span className="tabular-nums">{fmt(simAmount)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Underwriting Rate (Monthly)</span>
+                      <span className="text-slate-400 font-medium">Simulated Interest Rate (Monthly)</span>
                       <span>{selectedLender.interestRate}% / month</span>
                     </div>
                     <div className="flex justify-between">
@@ -844,7 +844,7 @@ export default function CapitalPage() {
                       </>
                     ) : (
                       <>
-                        Evaluate Underwriting Package
+                        Evaluate Credit Readiness Package
                       </>
                     )}
                   </button>
@@ -905,7 +905,7 @@ export default function CapitalPage() {
                     <div className="space-y-2">
                       <h4 className="text-lg font-black text-slate-900">Simulation Unsuccessful</h4>
                       <p className="text-xs text-red-600 bg-red-50/50 border border-red-100 p-3.5 rounded-2xl text-left leading-relaxed font-semibold max-w-sm mx-auto mt-2">
-                        {applicationResult.packagedProfile.rejectionReason || 'Underwriting triggers were not satisfied.'}
+                        {applicationResult.packagedProfile.rejectionReason || 'Credit readiness triggers were not satisfied.'}
                       </p>
                     </div>
                   </div>

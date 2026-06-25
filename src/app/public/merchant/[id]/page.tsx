@@ -177,7 +177,7 @@ export default function PublicPassportPage() {
               Business Trust Passport
             </h1>
             <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider print:text-slate-600">
-              Alternative Credit Underwriting & Verified Cashflow Ledger
+              Alternative Credit Readiness Indicator & Verified Cashflow Ledger
             </p>
           </div>
           <div className="text-left sm:text-right space-y-1">
@@ -245,7 +245,7 @@ export default function PublicPassportPage() {
                 <Award className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-200 print:text-black">Alternative Credit Underwriting Signal</p>
+                <p className="text-xs font-bold text-slate-200 print:text-black">Alternative Credit Readiness Indicator</p>
                 <p className="text-[11px] text-slate-400 leading-relaxed mt-1 print:text-slate-600">
                   This passport transforms raw transaction records into structured, verifiable insights, allowing financial partners to assess risk rapidly without leaking private numbers.
                 </p>
@@ -256,7 +256,7 @@ export default function PublicPassportPage() {
           {/* Column Right: Trust & Health Metrics */}
           <div className="space-y-6">
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 pb-2 print:border-slate-300 print:text-slate-700">
-              Underwriting Signals
+              Trust & Credit Indicators
             </h2>
 
             <div className="flex flex-col sm:flex-row gap-6 items-center">

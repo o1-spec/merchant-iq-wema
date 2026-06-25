@@ -603,7 +603,7 @@ export default function LandingPage() {
                   <div className="w-10 h-10 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm mb-4">
                     3
                   </div>
-                  <h3 className="font-bold text-slate-900 text-lg mb-1">Embedded Underwriting API</h3>
+                  <h3 className="font-bold text-slate-900 text-lg mb-1">Embedded Credit Readiness API</h3>
                   <p className="text-xs text-slate-400 mb-4">B2B Financial Intelligence</p>
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">
                     Fintechs, banks, and lending companies pay to query MerchantIQ&apos;s alternative credit readiness score to evaluate non-formal SME credit risks.
@@ -611,7 +611,7 @@ export default function LandingPage() {
                   <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Alternative Data</span>
                     <p className="text-[11px] text-slate-500 leading-normal">
-                      Turns raw, unstructured PDF/CSV transaction statement records into standardized underwriting signals in real-time.
+                      Turns raw, unstructured PDF/CSV transaction statement records into standardized credit readiness indicators in real-time.
                     </p>
                   </div>
                 </div>
