@@ -50,8 +50,5 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Disable all drop shadows in the project */
-*, ::before, ::after {
-  box-shadow: none !important;
-}
+
 
