@@ -13,7 +13,8 @@ export async function POST(req: NextRequest) {
       .update(rawBody)
       .digest('base64');
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const reqUrl = new URL(req.url);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${reqUrl.protocol}//${reqUrl.host}`;
     
     // Post to the webhook endpoint locally carrying the signature
     const webhookRes = await fetch(`${appUrl}/api/webhooks/alatpay`, {
