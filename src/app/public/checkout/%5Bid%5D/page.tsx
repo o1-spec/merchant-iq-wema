@@ -87,18 +87,28 @@ export default function MockCheckoutPage() {
 
     setPaying(true);
     try {
-      const res = await fetch('/api/webhooks/alatpay', {
+      const res = await fetch('/api/demo/simulate-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          event: 'payment.success',
-          type: 'payment_link',
-          id: paymentLink.id,
-          reference: paymentLink.reference,
-          amount: paymentLink.amount,
-          paymentMethod: paymentMethod,
+          Value: {
+            Status: true,
+            Message: 'Success',
+            Data: {
+              Amount: paymentLink.amount,
+              OrderId: paymentLink.reference,
+              Id: `MOCK-TX-${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
+              Channel: paymentMethod === 'CARD' ? 'Card' : 'Bank Transfer',
+              Status: 'completed',
+              Customer: {
+                Email: 'customer@merchantiq.app',
+                FirstName: paymentLink.customerName.split(' ')[0],
+                LastName: paymentLink.customerName.split(' ')[1] || 'Customer',
+              }
+            }
+          }
         }),
       });
 

@@ -238,16 +238,27 @@ export default function CollectionsPage() {
     setSimulatingTransfer(true);
     try {
       const ref = `MOCK-TX-${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
-      const res = await fetch('/api/webhooks/alatpay', {
+      const res = await fetch('/api/demo/simulate-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          event: 'payment.success',
-          type: 'virtual_account',
-          id: selectedAccount.id,
-          reference: ref,
-          amount: parseFloat(transferAmount),
-          paymentMethod: transferMethod,
+          Value: {
+            Status: true,
+            Message: 'Success',
+            Data: {
+              Amount: parseFloat(transferAmount),
+              OrderId: selectedAccount.accountNumber,
+              Id: ref,
+              Channel: 'Bank Transfer',
+              Status: 'completed',
+              NgnVirtualBankAccountNumber: selectedAccount.accountNumber,
+              Customer: {
+                Email: 'customer@merchantiq.app',
+                FirstName: selectedAccount.customerName.split(' ')[0],
+                LastName: selectedAccount.customerName.split(' ')[1] || 'Customer',
+              }
+            }
+          }
         }),
       });
 
