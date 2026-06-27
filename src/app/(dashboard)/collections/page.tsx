@@ -114,6 +114,7 @@ export default function CollectionsPage() {
   const [selectedReminderLink, setSelectedReminderLink] = useState<PaymentLink | null>(null);
   const [reminderDraft, setReminderDraft] = useState('');
   const [generatingReminder, setGeneratingReminder] = useState(false);
+  const [activeReminderTab, setActiveReminderTab] = useState<'whatsapp' | 'sms' | 'email'>('whatsapp');
 
   // CSV Fallback states
   const [file, setFile] = useState<File | null>(null);
@@ -288,6 +289,7 @@ export default function CollectionsPage() {
   async function handleGenerateReminder(link: PaymentLink) {
     setSelectedReminderLink(link);
     setReminderDraft('');
+    setActiveReminderTab('whatsapp');
     setShowReminderModal(true);
     setGeneratingReminder(true);
 
@@ -758,7 +760,7 @@ export default function CollectionsPage() {
                               className="flex items-center gap-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors font-bold text-[10px] uppercase tracking-wider cursor-pointer"
                             >
                               <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                              AI Follow Up
+                              AI Nudge
                             </button>
                           </>
                         )}
@@ -1048,63 +1050,137 @@ export default function CollectionsPage() {
         </div>
       )}
 
-      {/* AI Reminder Modal Overlay */}
-      {showReminderModal && selectedReminderLink && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-sm animate-in zoom-in-95 duration-200">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 shrink-0 border border-rose-100">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-900 text-sm">AI Cash Collection Assistant</h3>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">Collection Follow-Up draft for {selectedReminderLink.customerName}.</p>
-              </div>
-            </div>
+      {/* AI Reminder Modal Ov      {/* AI Reminder Modal Overlay */}
+      {showReminderModal && selectedReminderLink && (() => {
+        const parsed = (() => {
+          const result = { whatsapp: '', sms: '', email: '' };
+          if (!reminderDraft) return result;
 
-            {generatingReminder ? (
-              <div className="py-12 flex flex-col items-center justify-center gap-3">
-                <RefreshCw className="w-8 h-8 text-rose-600 animate-spin" />
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Drafting personalized reminder...</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-xl max-h-[300px] overflow-y-auto">
-                  <pre className="text-xs text-slate-700 whitespace-pre-wrap font-sans font-medium leading-relaxed">{reminderDraft}</pre>
+          const waIndex = reminderDraft.search(/\*\*1\.\s+WhatsApp\s+Draft\*\*/i);
+          const smsIndex = reminderDraft.search(/\*\*2\.\s+SMS\s+Draft\*\*/i);
+          const emailIndex = reminderDraft.search(/\*\*3\.\s+Email\s+Draft\*\*/i);
+
+          if (waIndex !== -1 && smsIndex !== -1 && emailIndex !== -1) {
+            result.whatsapp = reminderDraft.substring(waIndex + 21, smsIndex).trim();
+            result.sms = reminderDraft.substring(smsIndex + 14, emailIndex).trim();
+            result.email = reminderDraft.substring(emailIndex + 16).trim();
+          } else {
+            result.whatsapp = reminderDraft;
+            result.sms = reminderDraft.substring(0, 160);
+            result.email = reminderDraft;
+          }
+          return result;
+        })();
+
+        const activeText = parsed[activeReminderTab];
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-sm animate-in zoom-in-95 duration-200">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 shrink-0 border border-rose-100">
+                    <Sparkles className="w-5 h-5 text-rose-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-slate-900 text-sm">AI Cash Recovery Nudge</h3>
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">Collection Follow-Up draft for {selectedReminderLink.customerName}.</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => { setShowReminderModal(false); setReminderDraft(''); }}
+                  className="text-slate-450 hover:text-slate-700 font-bold text-sm cursor-pointer p-1"
+                >
+                  ✕
+                </button>
+              </div>
 
-                <div className="flex items-center justify-between gap-3 text-xs font-bold pt-1.5 border-t border-slate-100">
-                  <div className="flex gap-2.5">
-                    {/* Simulated triggers */}
-                    <a
-                      href={`https://wa.me/?text=${encodeURIComponent(reminderDraft)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer"
+              {generatingReminder ? (
+                <div className="py-12 flex flex-col items-center justify-center gap-3">
+                  <RefreshCw className="w-8 h-8 text-rose-600 animate-spin" />
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Drafting personalized reminder...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Styled Tabs Selector */}
+                  <div className="flex border-b border-slate-200 gap-2">
+                    <button
+                      onClick={() => setActiveReminderTab('whatsapp')}
+                      className={`px-3.5 py-2 text-xs font-bold border-b-2 -mb-px transition-colors cursor-pointer flex items-center gap-1.5
+                        ${activeReminderTab === 'whatsapp'
+                          ? 'border-emerald-600 text-emerald-700'
+                          : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       WhatsApp
-                    </a>
+                    </button>
                     <button
-                      onClick={copyReminder}
-                      className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                      onClick={() => setActiveReminderTab('sms')}
+                      className={`px-3.5 py-2 text-xs font-bold border-b-2 -mb-px transition-colors cursor-pointer flex items-center gap-1.5
+                        ${activeReminderTab === 'sms'
+                          ? 'border-blue-600 text-blue-700'
+                          : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
                     >
-                      <Copy className="w-3.5 h-3.5" />
-                      Copy Draft
+                      <Send className="w-3.5 h-3.5" />
+                      SMS
+                    </button>
+                    <button
+                      onClick={() => setActiveReminderTab('email')}
+                      className={`px-3.5 py-2 text-xs font-bold border-b-2 -mb-px transition-colors cursor-pointer flex items-center gap-1.5
+                        ${activeReminderTab === 'email'
+                          ? 'border-purple-600 text-purple-700'
+                          : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      Email
                     </button>
                   </div>
-                  <button
-                    onClick={() => { setShowReminderModal(false); setReminderDraft(''); }}
-                    className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 rounded-xl transition-colors cursor-pointer"
-                  >
-                    Close
-                  </button>
+
+                  {/* Draft Box */}
+                  <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-xl max-h-[220px] overflow-y-auto">
+                    <pre className="text-xs text-slate-700 whitespace-pre-wrap font-sans font-medium leading-relaxed">{activeText}</pre>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 text-xs font-bold pt-1.5 border-t border-slate-100">
+                    <div className="flex gap-2.5">
+                      {activeReminderTab === 'whatsapp' && (
+                        <a
+                          href={`https://wa.me/?text=${encodeURIComponent(activeText)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          Open WhatsApp
+                        </a>
+                      )}
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(activeText);
+                          success(`${activeReminderTab.toUpperCase()} draft copied to clipboard!`);
+                        }}
+                        className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy Draft
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => { setShowReminderModal(false); setReminderDraft(''); }}
+                      className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-550 hover:text-slate-800 rounded-xl transition-colors cursor-pointer"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Real-time Payment Notification Overlay */}
       {notification?.show && (
