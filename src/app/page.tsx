@@ -155,10 +155,10 @@ export default function LandingPage() {
                   Login
                 </Link>
                 <Link
-                  href="/login"
+                  href="/register"
                   className="text-sm font-semibold bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md transition-colors"
                 >
-                  Try Demo
+                  Register
                 </Link>
               </>
             ) : (
@@ -193,7 +193,7 @@ export default function LandingPage() {
               ) : (
                 <>
                   <Link href="/login" className="text-sm text-center text-slate-700 py-2">Login</Link>
-                  <Link href="/login" className="text-sm text-center font-semibold bg-primary text-white py-2.5 rounded-md">Try Demo</Link>
+                  <Link href="/register" className="text-sm text-center font-semibold bg-primary text-white py-2.5 rounded-md">Register</Link>
                 </>
               )}
             </div>
@@ -234,17 +234,17 @@ export default function LandingPage() {
                   ) : (
                     <>
                       <Link
-                        href="/login"
+                        href="/register"
                         className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-slate-950 text-white font-semibold px-7 py-3.5 rounded-lg transition-all text-sm"
                       >
-                        Try Demo
+                        Get Started
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       <Link
                         href="/login"
                         className="inline-flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-semibold px-7 py-3.5 rounded-lg transition-all text-sm"
                       >
-                        Create Account
+                        Login
                       </Link>
                     </>
                   )}
@@ -646,17 +646,17 @@ export default function LandingPage() {
               ) : (
                 <>
                   <Link
-                    href="/login"
+                    href="/register"
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-slate-950 text-white font-semibold px-8 py-4 rounded-xl transition-all shadow-sm hover:shadow-md text-base"
                   >
-                    Try Demo
+                    Get Started Now
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                   <Link
                     href="/login"
                     className="w-full sm:w-auto inline-flex items-center justify-center border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-semibold px-8 py-4 rounded-xl transition-all text-base"
                   >
-                    Create Account
+                    Login to Account
                   </Link>
                 </>
               )}
