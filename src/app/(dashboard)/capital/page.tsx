@@ -87,6 +87,7 @@ function fmt(amount: number) {
 }
 
 const statusBadge: Record<string, string> = {
+  SIMULATED_APPROVAL: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   APPROVED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
   REJECTED: 'bg-red-50 text-red-700 border-red-200',

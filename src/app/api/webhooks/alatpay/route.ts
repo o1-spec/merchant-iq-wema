@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const validated = validation.data;
 
     // Reject non-successful transactions
-    if (validated.Value.Status !== true || validated.Value.Data.Status.toLowerCase() !== 'completed') {
+    if (validated.Value.Status !== true || !['completed', 'successful', 'success'].includes(validated.Value.Data.Status.toLowerCase())) {
       return errorResponse('Webhook ignored: Transaction status is not completed', 400);
     }
 

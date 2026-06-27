@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       status = 'REJECTED';
       rejectionReason = `Requested amount exceeds the maximum qualified capacity for this scenario (Capacity: ₦${Math.round(maxAmount).toLocaleString()}).`;
     } else if (businessHealth.score >= 80) {
-      status = 'APPROVED';
+      status = 'SIMULATED_APPROVAL';
     } else {
       status = 'PENDING'; // Needs review
     }
