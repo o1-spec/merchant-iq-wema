@@ -36,6 +36,7 @@ export default function MockCheckoutPage() {
   const { success, error: toastError } = useToast();
 
   const [paymentLink, setPaymentLink] = useState<PaymentLinkData | null>(null);
+  const [alatpayConfig, setAlatpayConfig] = useState<{ publicKey: string | null; businessId: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'TRANSFER' | 'ALAT'>('CARD');
@@ -63,6 +64,9 @@ export default function MockCheckoutPage() {
       const json = await res.json();
       if (json.success) {
         setPaymentLink(json.data.paymentLink);
+        if (json.data.alatpayConfig) {
+          setAlatpayConfig(json.data.alatpayConfig);
+        }
         if (json.data.paymentLink.status === 'PAID') {
           setPaid(true);
         }
@@ -81,6 +85,18 @@ export default function MockCheckoutPage() {
     if (id) {
       fetchDetails();
     }
+
+    // Load the official Wema Bank ALATPay widget script
+    const script = document.createElement('script');
+    script.src = 'https://web.alatpay.ng/js/alatpay.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, [id]);
 
   async function handlePayment(e: React.FormEvent) {
@@ -88,6 +104,53 @@ export default function MockCheckoutPage() {
     if (!paymentLink || paying || paid) return;
 
     setPaying(true);
+
+    // If real ALATPay public keys and the library are available, trigger the actual ALATPay modal
+    // @ts-ignore
+    if (typeof window !== 'undefined' && window.Alatpay && alatpayConfig?.publicKey && alatpayConfig?.businessId) {
+      try {
+        // @ts-ignore
+        const popup = window.Alatpay.setup({
+          apiKey: alatpayConfig.publicKey,
+          businessId: alatpayConfig.businessId,
+          email: 'customer@merchantiq.app',
+          amount: paymentLink.amount,
+          currency: 'NGN',
+          firstName: paymentLink.customerName.split(' ')[0] || 'Customer',
+          lastName: paymentLink.customerName.split(' ')[1] || 'Guest',
+          metaData: {
+            orderId: paymentLink.reference,
+          },
+          onTransaction: function (response: any) {
+            console.log("ALATPay checkout transaction response:", response);
+            if (response && (response.status === 'success' || response.status === 'completed' || response.status === 'successful')) {
+              setPaid(true);
+              success('Payment completed via Wema Bank ALATPay!');
+              setNotification({
+                show: true,
+                amount: paymentLink.amount,
+                customerName: paymentLink.customerName,
+              });
+            } else {
+              toastError('Transaction was not successful.');
+            }
+            setPaying(false);
+          },
+          onClose: function () {
+            setPaying(false);
+            console.log("ALATPay checkout closed");
+          }
+        });
+        popup.show();
+      } catch (err) {
+        console.error("ALATPay initialization error:", err);
+        toastError("Failed to launch ALATPay checkout.");
+        setPaying(false);
+      }
+      return;
+    }
+
+    // Otherwise, fall back to simulating local webhook flow for testing
     try {
       const res = await fetch('/api/demo/simulate-payment', {
         method: 'POST',

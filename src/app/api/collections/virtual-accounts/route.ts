@@ -45,16 +45,72 @@ export async function POST(req: NextRequest) {
 
     const { customerName } = result.data;
 
-    // Generate random 10-digit account number starting with 801
-    const rand = Math.floor(1000000 + Math.random() * 9000000);
-    const accountNumber = `801${rand}`;
+    let accountNumber = '';
+    const bankName = 'Wema / ALAT';
+
+    const secretKey = process.env.ALATPAY_SECRET_KEY;
+    const businessId = process.env.ALATPAY_BUSINESS_ID;
+
+    // Check if a real custom secret key is defined (not the default reference key)
+    if (secretKey && businessId && secretKey !== 'ded75985361f4dc2bcd1663d7a1d0151') {
+      try {
+        const orderId = `ALAT-VA-${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
+        const nameParts = customerName.trim().split(' ');
+        const firstName = nameParts[0] || 'Customer';
+        const lastName = nameParts.slice(1).join(' ') || 'Guest';
+
+        const response = await fetch('https://api.alatpay.ng/bank-transfer/api/v1/bankTransfer/virtualAccount', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Ocp-Apim-Subscription-Key': secretKey,
+          },
+          body: JSON.stringify({
+            businessId: businessId,
+            amount: 0,
+            currency: 'NGN',
+            orderId: orderId,
+            description: `Virtual account for ${customerName}`,
+            customer: {
+              email: 'customer@merchantiq.app',
+              phone: '08000000000',
+              firstName: firstName,
+              lastName: lastName,
+            }
+          })
+        });
+
+        if (response.ok) {
+          const resJson = await response.json();
+          if (resJson && resJson.accountNumber) {
+            accountNumber = resJson.accountNumber;
+          } else if (resJson && resJson.result?.accountNumber) {
+            accountNumber = resJson.result.accountNumber;
+          } else if (resJson && resJson.data?.accountNumber) {
+            accountNumber = resJson.data.accountNumber;
+          }
+          console.log('Real ALATPay Virtual Account issued successfully:', accountNumber);
+        } else {
+          const errText = await response.text();
+          console.warn('ALATPay API returned error response. Falling back to sandbox simulation.', errText);
+        }
+      } catch (vaErr) {
+        console.error('Failed to provision virtual account via ALATPay API. Falling back to sandbox simulation:', vaErr);
+      }
+    }
+
+    // Fallback if real ALATPay API call did not run or did not return an account number
+    if (!accountNumber) {
+      const rand = Math.floor(1000000 + Math.random() * 9000000);
+      accountNumber = `801${rand}`;
+    }
 
     const virtualAccount = await prisma.virtualAccount.create({
       data: {
         merchantId: merchant.id,
         customerName,
         accountNumber,
-        bankName: 'Wema / ALAT',
+        bankName,
       },
     });
 

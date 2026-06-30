@@ -25,7 +25,13 @@ export async function GET(
       return errorResponse('Payment link not found', 404);
     }
 
-    return successResponse({ paymentLink });
+    return successResponse({
+      paymentLink,
+      alatpayConfig: {
+        publicKey: process.env.ALATPAY_PUBLIC_KEY || null,
+        businessId: process.env.ALATPAY_BUSINESS_ID || null,
+      }
+    });
   } catch (err) {
     const error = err as Error;
     console.error('GET public checkout data error:', error);

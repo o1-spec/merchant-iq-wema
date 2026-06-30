@@ -8,11 +8,16 @@ export async function POST(req: NextRequest) {
   try {
     const bodyText = await req.text();
 
-    // Verify webhook signature in production environment
+    // Verify webhook signature in production or if a custom webhook secret is defined
     const signature = req.headers.get('x-signature');
     const webhookSecret = process.env.ALATPAY_WEBHOOK_SECRET;
 
-    if (process.env.NODE_ENV === 'production') {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const isCustomSecretConfigured = webhookSecret && 
+      webhookSecret !== '38051ceab8deb2a919a5d60b5c51393e' && 
+      webhookSecret !== 'dev-webhook-secret-key-123';
+
+    if (isProduction || isCustomSecretConfigured) {
       if (!signature || !webhookSecret) {
         return errorResponse('Unauthorized: Missing signature or webhook secret key', 401);
       }
