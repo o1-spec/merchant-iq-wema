@@ -113,9 +113,6 @@ export async function GET(req: NextRequest) {
         revenue30 = totalInflows / Math.max(1, completed.length / 10); // estimate monthly
       }
     }
-    if (revenue30 === 0) {
-      revenue30 = 100000; // base default for calculation
-    }
 
     const offers = SCENARIOS.map(l => {
       const eligible = businessHealth.score >= l.minScore;

@@ -65,7 +65,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                   <td className="px-6 py-4 text-slate-700 font-semibold whitespace-nowrap text-xs">
                     {tx.category}
                   </td>
-                  <td className="px-6 py-4 text-slate-400 text-xs hidden sm:table-cell max-w-[200px] truncate">
+                  <td className="px-6 py-4 text-slate-500 text-xs hidden sm:table-cell max-w-xs truncate">
                     {tx.description ?? '—'}
                   </td>
                   <td className="px-6 py-4 text-right whitespace-nowrap font-bold tabular-nums">

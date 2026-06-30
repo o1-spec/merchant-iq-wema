@@ -29,7 +29,8 @@ import {
   Mail,
   User,
   ShieldCheck,
-  Coins
+  Coins,
+  Search
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import {
@@ -114,6 +115,7 @@ export default function CollectionsPage() {
   const [selectedReminderLink, setSelectedReminderLink] = useState<PaymentLink | null>(null);
   const [reminderDraft, setReminderDraft] = useState('');
   const [generatingReminder, setGeneratingReminder] = useState(false);
+  const [activeReminderTab, setActiveReminderTab] = useState<'whatsapp' | 'sms' | 'email'>('whatsapp');
 
   // CSV Fallback states
   const [file, setFile] = useState<File | null>(null);
@@ -131,6 +133,7 @@ export default function CollectionsPage() {
   } | null>(null);
 
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   async function loadData() {
     setLoadingData(true);
@@ -238,16 +241,27 @@ export default function CollectionsPage() {
     setSimulatingTransfer(true);
     try {
       const ref = `MOCK-TX-${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
-      const res = await fetch('/api/webhooks/alatpay', {
+      const res = await fetch('/api/demo/simulate-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          event: 'payment.success',
-          type: 'virtual_account',
-          id: selectedAccount.id,
-          reference: ref,
-          amount: parseFloat(transferAmount),
-          paymentMethod: transferMethod,
+          Value: {
+            Status: true,
+            Message: 'Success',
+            Data: {
+              Amount: parseFloat(transferAmount),
+              OrderId: selectedAccount.accountNumber,
+              Id: ref,
+              Channel: 'Bank Transfer',
+              Status: 'completed',
+              NgnVirtualBankAccountNumber: selectedAccount.accountNumber,
+              Customer: {
+                Email: 'customer@merchantiq.app',
+                FirstName: selectedAccount.customerName.split(' ')[0],
+                LastName: selectedAccount.customerName.split(' ')[1] || 'Customer',
+              }
+            }
+          }
         }),
       });
 
@@ -277,6 +291,7 @@ export default function CollectionsPage() {
   async function handleGenerateReminder(link: PaymentLink) {
     setSelectedReminderLink(link);
     setReminderDraft('');
+    setActiveReminderTab('whatsapp');
     setShowReminderModal(true);
     setGeneratingReminder(true);
 
@@ -473,7 +488,7 @@ export default function CollectionsPage() {
           onClick={() => setActiveTab('csv')}
           className={`px-4 py-2.5 border-b-2 transition-all cursor-pointer ${activeTab === 'csv' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
         >
-          Manual Import (CSV)
+          Import Historical Data
         </button>
       </div>
 
@@ -747,7 +762,7 @@ export default function CollectionsPage() {
                               className="flex items-center gap-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors font-bold text-[10px] uppercase tracking-wider cursor-pointer"
                             >
                               <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                              AI Follow Up
+                              AI Nudge
                             </button>
                           </>
                         )}
@@ -805,8 +820,23 @@ export default function CollectionsPage() {
           </div>
 
           {/* Virtual Accounts Listing */}
-          <div className="lg:col-span-2 bg-white border border-card-border rounded-2xl p-5 space-y-4">
-            <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Customer Virtual Accounts</h2>
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Customer Virtual Accounts</h2>
+              
+              {virtualAccounts.length > 0 && (
+                <div className="relative max-w-xs w-full">
+                  <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search customer or account..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary rounded-xl pl-8.5 pr-3 py-1.5 text-xs text-slate-800 outline-none transition-colors"
+                  />
+                </div>
+              )}
+            </div>
 
             {virtualAccounts.length === 0 ? (
               <div className="border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center space-y-2">
@@ -814,35 +844,51 @@ export default function CollectionsPage() {
                 <p className="text-slate-600 font-bold text-sm">No virtual accounts provisioned</p>
                 <p className="text-xs text-slate-400">Customer account listings will appear here.</p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
-                {virtualAccounts.map(account => (
-                  <div key={account.id} className="border border-card-border rounded-2xl p-4 bg-slate-50/40 space-y-3.5 flex flex-col justify-between hover:border-slate-300 transition-colors">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-slate-400" />
-                        <span className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">{account.customerName}</span>
-                      </div>
-                      <div className="space-y-0.5">
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Account Details</p>
-                        <p className="text-base font-black text-slate-900 font-mono tracking-wider mt-0.5">{account.accountNumber}</p>
-                        <p className="text-[10px] text-rose-600 font-extrabold uppercase">{account.bankName}</p>
-                      </div>
-                    </div>
+            ) : (() => {
+              const filtered = virtualAccounts.filter(account =>
+                account.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                account.accountNumber.includes(searchQuery)
+              );
 
-                    <button
-                      onClick={() => {
-                        setSelectedAccount(account);
-                        setShowTransferModal(true);
-                      }}
-                      className="w-full py-2 border border-rose-600 hover:bg-rose-50/20 text-rose-600 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
-                    >
-                      Simulate Inbound Payment
-                    </button>
+              if (filtered.length === 0) {
+                return (
+                  <div className="border border-dashed border-slate-200 rounded-2xl p-12 text-center space-y-2 bg-slate-50/50">
+                    <p className="text-slate-600 font-bold text-sm">No results match your search</p>
+                    <p className="text-xs text-slate-400">Try searching for a different customer name or account number.</p>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
+                  {filtered.map(account => (
+                    <div key={account.id} className="border border-card-border rounded-2xl p-4 bg-slate-50/40 space-y-3.5 flex flex-col justify-between hover:border-slate-300 transition-colors">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-slate-400" />
+                          <span className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">{account.customerName}</span>
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Account Details</p>
+                          <p className="text-base font-black text-slate-900 font-mono tracking-wider mt-0.5">{account.accountNumber}</p>
+                          <p className="text-[10px] text-rose-600 font-extrabold uppercase">{account.bankName}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setSelectedAccount(account);
+                          setShowTransferModal(true);
+                        }}
+                        className="w-full py-2 border border-rose-600 hover:bg-rose-50/20 text-rose-600 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
+                      >
+                        Simulate Inbound Payment
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
@@ -979,7 +1025,7 @@ export default function CollectionsPage() {
       {/* Transfer Simulation Modal Overlay */}
       {showTransferModal && selectedAccount && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-sm animate-in zoom-in-95 duration-200">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl animate-in zoom-in-95 duration-200">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 shrink-0 border border-rose-100">
                 <Building className="w-5 h-5" />
@@ -1037,63 +1083,151 @@ export default function CollectionsPage() {
         </div>
       )}
 
-      {/* AI Reminder Modal Overlay */}
-      {showReminderModal && selectedReminderLink && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-sm animate-in zoom-in-95 duration-200">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 shrink-0 border border-rose-100">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-900 text-sm">AI Cash Collection Assistant</h3>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">Collection Follow-Up draft for {selectedReminderLink.customerName}.</p>
-              </div>
-            </div>
+      {/* AI Reminder Modal Ov      {/* AI Reminder Modal Overlay */}
+      {showReminderModal && selectedReminderLink && (() => {
+        const parsed = (() => {
+          const result = { whatsapp: '', sms: '', email: '' };
+          if (!reminderDraft) return result;
 
-            {generatingReminder ? (
-              <div className="py-12 flex flex-col items-center justify-center gap-3">
-                <RefreshCw className="w-8 h-8 text-rose-600 animate-spin" />
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Drafting personalized reminder...</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-xl max-h-[300px] overflow-y-auto">
-                  <pre className="text-xs text-slate-700 whitespace-pre-wrap font-sans font-medium leading-relaxed">{reminderDraft}</pre>
+          const waIndex = reminderDraft.search(/\*\*1\.\s+WhatsApp\s+Draft\*\*/i);
+          const smsIndex = reminderDraft.search(/\*\*2\.\s+SMS\s+Draft\*\*/i);
+          const emailIndex = reminderDraft.search(/\*\*3\.\s+Email\s+Draft\*\*/i);
+
+          if (waIndex !== -1 && smsIndex !== -1 && emailIndex !== -1) {
+            result.whatsapp = reminderDraft.substring(waIndex + 21, smsIndex).trim();
+            result.sms = reminderDraft.substring(smsIndex + 14, emailIndex).trim();
+            result.email = reminderDraft.substring(emailIndex + 16).trim();
+          } else {
+            result.whatsapp = reminderDraft;
+            result.sms = reminderDraft.substring(0, 160);
+            result.email = reminderDraft;
+          }
+          return result;
+        })();
+
+        const activeText = parsed[activeReminderTab];
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-xl animate-in zoom-in-95 duration-200">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 shrink-0 border border-rose-100">
+                    <Sparkles className="w-5 h-5 text-rose-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-slate-900 text-sm">AI Cash Recovery Nudge</h3>
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">Collection Follow-Up draft for {selectedReminderLink.customerName}.</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => { setShowReminderModal(false); setReminderDraft(''); }}
+                  className="text-slate-450 hover:text-slate-700 font-bold text-sm cursor-pointer p-1"
+                >
+                  ✕
+                </button>
+              </div>
 
-                <div className="flex items-center justify-between gap-3 text-xs font-bold pt-1.5 border-t border-slate-100">
-                  <div className="flex gap-2.5">
-                    {/* Simulated triggers */}
-                    <a
-                      href={`https://wa.me/?text=${encodeURIComponent(reminderDraft)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer"
+              {generatingReminder ? (
+                <div className="py-12 flex flex-col items-center justify-center gap-3">
+                  <RefreshCw className="w-8 h-8 text-rose-600 animate-spin" />
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Drafting personalized reminder...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Styled Tabs Selector */}
+                  <div className="flex border-b border-slate-200 gap-2">
+                    <button
+                      onClick={() => setActiveReminderTab('whatsapp')}
+                      className={`px-3.5 py-2 text-xs font-bold border-b-2 -mb-px transition-colors cursor-pointer flex items-center gap-1.5
+                        ${activeReminderTab === 'whatsapp'
+                          ? 'border-emerald-600 text-emerald-700'
+                          : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       WhatsApp
-                    </a>
+                    </button>
                     <button
-                      onClick={copyReminder}
-                      className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                      onClick={() => setActiveReminderTab('sms')}
+                      className={`px-3.5 py-2 text-xs font-bold border-b-2 -mb-px transition-colors cursor-pointer flex items-center gap-1.5
+                        ${activeReminderTab === 'sms'
+                          ? 'border-blue-600 text-blue-700'
+                          : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
                     >
-                      <Copy className="w-3.5 h-3.5" />
-                      Copy Draft
+                      <Send className="w-3.5 h-3.5" />
+                      SMS
+                    </button>
+                    <button
+                      onClick={() => setActiveReminderTab('email')}
+                      className={`px-3.5 py-2 text-xs font-bold border-b-2 -mb-px transition-colors cursor-pointer flex items-center gap-1.5
+                        ${activeReminderTab === 'email'
+                          ? 'border-purple-600 text-purple-700'
+                          : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      Email
                     </button>
                   </div>
-                  <button
-                    onClick={() => { setShowReminderModal(false); setReminderDraft(''); }}
-                    className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 rounded-xl transition-colors cursor-pointer"
-                  >
-                    Close
-                  </button>
+
+                  {/* AI Nudge Impact Summary Box */}
+                  <div className="grid grid-cols-2 gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs font-semibold text-slate-100">
+                    <div className="space-y-1">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Expected Recovery</p>
+                      <p className="text-lg font-black text-white tabular-nums">{fmt(selectedReminderLink.amount)}</p>
+                      <span className="text-[9px] text-indigo-300">Targeting {selectedReminderLink.customerName}</span>
+                    </div>
+                    <div className="space-y-1 border-l border-slate-800 pl-4">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Cash Runway Impact</p>
+                      <p className="text-lg font-black text-white">+{Math.round(selectedReminderLink.amount / 8000) || 2} Days</p>
+                      <span className="text-[9px] text-emerald-400 font-medium">Estimated increase</span>
+                    </div>
+                  </div>
+
+                  {/* Draft Box */}
+                  <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-xl max-h-[220px] overflow-y-auto">
+                    <pre className="text-xs text-slate-700 whitespace-pre-wrap font-sans font-medium leading-relaxed">{activeText}</pre>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 text-xs font-bold pt-1.5 border-t border-slate-100">
+                    <div className="flex gap-2.5">
+                      {activeReminderTab === 'whatsapp' && (
+                        <a
+                          href={`https://wa.me/?text=${encodeURIComponent(activeText)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          Open WhatsApp
+                        </a>
+                      )}
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(activeText);
+                          success(`${activeReminderTab.toUpperCase()} draft copied to clipboard!`);
+                        }}
+                        className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy Draft
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => { setShowReminderModal(false); setReminderDraft(''); }}
+                      className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-550 hover:text-slate-800 rounded-xl transition-colors cursor-pointer"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Real-time Payment Notification Overlay */}
       {notification?.show && (

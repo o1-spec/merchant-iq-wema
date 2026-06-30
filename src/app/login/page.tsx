@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { login } from '@/lib/auth-client';
 import { AuthLeftPanel } from '@/components/auth/AuthLeftPanel';
+import { useToast } from '@/components/ui/toast';
 
 function Field({
   label,
@@ -71,6 +72,7 @@ function Field({
 
 export default function LoginPage() {
   const router = useRouter();
+  const { success, error: toastError } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -91,13 +93,19 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setApiError('');
-    if (!validate()) return;
+    if (!validate()) {
+      toastError('Please fix the validation errors before signing in.');
+      return;
+    }
     setLoading(true);
     try {
       await login({ email: email.trim().toLowerCase(), password });
+      success('Logged in successfully!');
       router.push('/dashboard');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+      const errMsg = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      setApiError(errMsg);
+      toastError(errMsg);
     } finally {
       setLoading(false);
     }
@@ -109,9 +117,9 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
       
       {/* Left side brand brief section (40% width) */}
-      <aside className="hidden lg:flex flex-col justify-between w-full lg:w-[42%] xl:w-[38%] shrink-0 bg-slate-950 border-r border-slate-900 px-12 py-12 relative overflow-hidden">
+      <aside className="hidden lg:flex flex-col justify-between w-full lg:w-[42%] xl:w-[38%] shrink-0 bg-slate-50 border-r border-slate-200 px-12 py-12 relative overflow-hidden">
         {/* Decorative backdrop mesh */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(59,130,246,0.08)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(99,102,241,0.04)_0%,transparent_70%)]" />
         <div className="relative z-10 h-full flex flex-col justify-between">
           <AuthLeftPanel />
         </div>

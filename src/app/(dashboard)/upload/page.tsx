@@ -181,9 +181,9 @@ export default function UploadPage() {
     setDownloading(true);
     try {
       await downloadSampleCsv();
-      success('Sample CSV template downloaded successfully.');
+      success('Sample template downloaded successfully.');
     } catch (err) {
-      toastError(err instanceof Error ? err.message : 'Failed to download sample CSV.');
+      toastError(err instanceof Error ? err.message : 'Failed to download sample template.');
     } finally {
       setDownloading(false);
     }
@@ -203,9 +203,9 @@ export default function UploadPage() {
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-card-border">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Upload transaction data</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Import Historical Statement Data</h1>
           <p className="text-slate-500 text-sm mt-1.5 font-medium">
-            Import bank statements from any institution. AI auto-detects the column layout.
+            Bootstrap your ledger history using bank statements from any institution. AI auto-detects the column layout.
           </p>
         </div>
         <button
@@ -219,7 +219,7 @@ export default function UploadPage() {
           ) : (
             <Download className="w-4 h-4 text-slate-500" />
           )}
-          Download sample CSV
+          Download Sample Template
         </button>
       </div>
 
@@ -530,7 +530,7 @@ export default function UploadPage() {
             <div className="flex items-start gap-2.5">
               <HelpCircle className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Where can I get a CSV?</h3>
+                <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Where can I get a statement file?</h3>
                 <p className="text-xs text-slate-400 font-medium mt-1">Common ways to export transaction data:</p>
               </div>
             </div>
@@ -539,7 +539,7 @@ export default function UploadPage() {
               <li className="flex gap-2">
                 <span className="text-primary font-bold">•</span>
                 <span>
-                  <strong>POS Terminals:</strong> Export transaction statement spreadsheets from your POS dashboard (Moniepoint, OPay, etc.) as CSV.
+                  <strong>POS Terminals:</strong> Export transaction statement spreadsheets from your POS dashboard (Moniepoint, OPay, etc.) as CSV/Excel.
                 </span>
               </li>
               <li className="flex gap-2">

@@ -87,6 +87,7 @@ function fmt(amount: number) {
 }
 
 const statusBadge: Record<string, string> = {
+  SIMULATED_APPROVAL: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   APPROVED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
   REJECTED: 'bg-red-50 text-red-700 border-red-200',
@@ -271,7 +272,7 @@ export default function CapitalPage() {
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-indigo-500" />
-              Business Trust Score
+              Business Reliability Score
             </p>
             <div className="flex items-baseline gap-1 mt-2.5">
               <span className="text-3xl font-black text-slate-900">{300 + Math.round((creditScore / 100) * 550)}</span>
@@ -374,7 +375,7 @@ export default function CapitalPage() {
               </div>
 
               <div className="pt-2 text-[10px] text-indigo-300 font-bold flex items-center gap-1.5 uppercase tracking-wider">
-                <span>💡 Target score: Improve Business Trust Score above 658 to unlock growth capital scenarios.</span>
+                <span>💡 Target score: Improve Business Reliability Score above 658 to unlock growth capital scenarios.</span>
               </div>
             </div>
           )}
@@ -387,7 +388,7 @@ export default function CapitalPage() {
                   <TrendingUp className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-850 text-sm">Business Trust Score History Trend</h3>
+                  <h3 className="font-extrabold text-slate-850 text-sm">Business Reliability Score History Trend</h3>
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Monthly Ledger Progression</p>
                 </div>
               </div>
@@ -496,7 +497,7 @@ export default function CapitalPage() {
                   <Activity className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-sm">Business Trust Score Breakdown</h3>
+                  <h3 className="font-extrabold text-slate-800 text-sm">Business Reliability Score Breakdown</h3>
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Dynamic Score Allocation</p>
                 </div>
               </div>
@@ -860,9 +861,9 @@ export default function CapitalPage() {
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <div className="space-y-2">
-                      <h4 className="text-lg font-black text-slate-900">Simulation Passed!</h4>
+                      <h4 className="text-lg font-black text-slate-900">Pre-Qualification Criteria Met!</h4>
                       <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto font-medium">
-                        Your Business Trust Score logs successfully qualify for the <strong>{selectedLender.name}</strong> scenario metrics.
+                        Your Business Reliability metrics successfully pre-qualify for the <strong>{selectedLender.name}</strong> scenario metrics.
                       </p>
                     </div>
 

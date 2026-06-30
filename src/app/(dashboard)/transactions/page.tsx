@@ -579,7 +579,7 @@ export default function TransactionsPage() {
               hover:bg-slate-50 rounded-xl transition-all bg-white hover:border-slate-350"
           >
             <Upload className="w-4 h-4" />
-            Upload CSV
+            Import History
           </Link>
           <button
             onClick={() => { setModalError(''); setShowAdd(true); }}
@@ -710,7 +710,7 @@ export default function TransactionsPage() {
             <Receipt className="w-6 h-6 text-slate-400" />
           </div>
           <p className="font-semibold text-slate-800">No transactions yet</p>
-          <p className="text-sm text-slate-500">Add a transaction or upload a CSV to begin.</p>
+          <p className="text-sm text-slate-500">Add a transaction or import history to begin.</p>
           <div className="flex gap-2 mt-1">
             <button
               onClick={() => setShowAdd(true)}
@@ -720,7 +720,7 @@ export default function TransactionsPage() {
             </button>
             <span className="text-slate-300">·</span>
             <Link href="/upload" className="text-sm font-semibold text-emerald-700 hover:underline">
-              Upload CSV
+              Import History
             </Link>
           </div>
         </div>

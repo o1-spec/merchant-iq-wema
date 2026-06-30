@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  /* THEME CONFIGURATION - Update these values to change the visual theme of the app */
-  --primary: #0f172a;          /* Brand primary color (Dark Slate-900) */
-  --primary-hover: #1e293b;    /* Hover state for primary buttons (Slate-800) */
-  --primary-light: #f1f5f9;    /* Accent highlight background (Slate-100) */
+  /* THEME CONFIGURATION - Wema Bank / ALAT Royal Purple Light Theme */
+  --primary: #6d28d9;          /* Brand primary color (Wema Purple-700) */
+  --primary-hover: #5b21b6;    /* Hover state for primary buttons (Purple-800) */
+  --primary-light: #f5f3ff;    /* Accent highlight background (Purple-50) */
   --primary-foreground: #ffffff;
   
-  --background: #f1f5f9;       /* Body page background (light gray slate-100) */
-  --foreground: #0f172a;       /* Base text color (dark slate-900) */
+  --background: #f8fafc;       /* Body page background (Slate-50) */
+  --foreground: #0f172a;       /* Base text color (Slate-900) */
   
-  --card: #ffffff;             /* Card and panel background */
-  --card-foreground: #1e293b;  /* Card text */
-  --card-border: #f1f5f9;      /* Super-light borders for clean cards (slate-100) */
-  --border: #e2e8f0;           /* Standard divider border (slate-200) */
+  --card: #ffffff;             /* Card and panel background (Pure White) */
+  --card-foreground: #1e293b;  /* Card text (Slate-800) */
+  --card-border: #e2e8f0;      /* Clean slate-200 borders */
+  --border: #cbd5e1;           /* Standard divider border (slate-300) */
   
-  --muted: #f8fafc;            /* Disabled or secondary background */
+  --muted: #f1f5f9;            /* Disabled or secondary background */
   --muted-foreground: #64748b;  /* Muted metadata text (slate-500) */
   
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -50,8 +50,154 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Disable all drop shadows in the project */
-*, ::before, ::after {
-  box-shadow: none !important;
+/* ==========================================
+   Premium Light-Fintech Theme Global Overrides
+   ========================================== */
+
+html, body {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  min-height: 100vh;
 }
 
+/* Unify all primary button and active nav backgrounds to brand purple */
+.bg-primary,
+.bg-slate-900,
+.bg-slate-950 {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-color: var(--primary) !important;
+}
+
+.hover\:bg-primary-hover:hover,
+.hover\:bg-slate-800:hover,
+.hover\:bg-slate-950:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+/* Force clean white card and modal surfaces */
+.bg-white,
+.bg-card {
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+  border-color: var(--card-border) !important;
+}
+
+/* Force light gray page frames */
+.bg-slate-50 {
+  background-color: var(--background) !important;
+}
+
+.bg-slate-100 {
+  background-color: var(--muted) !important;
+}
+
+/* Inputs, Textareas, and Dropdown styling */
+input, textarea, select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--primary) !important;
+  outline: none !important;
+}
+
+/* Base text overrides */
+.text-slate-900,
+.text-slate-800,
+.text-slate-750,
+.text-slate-700,
+.text-slate-655,
+.text-slate-600 {
+  color: #0f172a !important;
+}
+
+.text-slate-500,
+.text-slate-400 {
+  color: #64748b !important;
+}
+
+.text-slate-300 {
+  color: #94a3b8 !important;
+}
+
+/* Background hover overrides */
+.hover\:bg-slate-50:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.hover\:bg-slate-100:hover {
+  background-color: #e2e8f0 !important;
+}
+
+/* Divider lines */
+.border-slate-100,
+.border-slate-200,
+.border-slate-300,
+.border-card-border {
+  border-color: #e2e8f0 !important;
+}
+
+/* Navigation items active and hover overrides */
+.hover\:text-slate-900:hover {
+  color: #0f172a !important;
+}
+
+/* Sidebar styling mapping */
+aside.z-20, aside.z-50, .md\:w-20 {
+  background-color: #ffffff !important;
+  border-right-color: #e2e8f0 !important;
+}
+
+/* Header bar styling mapping */
+header {
+  background-color: #ffffff !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+/* Primary texts */
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.bg-primary-light {
+  background-color: var(--primary-light) !important;
+  color: var(--primary) !important;
+}
+
+/* Dynamic status elements overrides */
+.text-emerald-600,
+.text-emerald-700 {
+  color: #059669 !important;
+}
+
+.text-rose-600,
+.text-rose-700 {
+  color: #dc2626 !important;
+}
+
+.bg-emerald-50 {
+  background-color: rgba(5, 150, 105, 0.08) !important;
+  color: #059669 !important;
+  border-color: rgba(5, 150, 105, 0.15) !important;
+}
+
+.bg-rose-50 {
+  background-color: rgba(220, 38, 38, 0.08) !important;
+  color: #dc2626 !important;
+  border-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+.bg-amber-50 {
+  background-color: rgba(217, 119, 6, 0.08) !important;
+  color: #d97706 !important;
+  border-color: rgba(217, 119, 6, 0.15) !important;
+}
+
+/* Dashboard summary widgets overrides */
+.bg-primary\/5 {
+  background-color: rgba(109, 40, 217, 0.08) !important;
+}

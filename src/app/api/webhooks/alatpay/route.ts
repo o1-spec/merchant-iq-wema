@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const bodyText = await req.text();
 
     // Verify webhook signature in production environment
-    const signature = req.headers.get('x-alatpay-signature');
+    const signature = req.headers.get('x-signature');
     const webhookSecret = process.env.ALATPAY_WEBHOOK_SECRET;
 
     if (process.env.NODE_ENV === 'production') {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       const computedHash = crypto
         .createHmac('sha256', webhookSecret)
         .update(bodyText)
-        .digest('hex');
+        .digest('base64');
       if (computedHash !== signature) {
         return errorResponse('Unauthorized: Webhook signature verification failed', 401);
       }
@@ -33,33 +33,52 @@ export async function POST(req: NextRequest) {
 
     const validated = validation.data;
 
+    // Reject non-successful transactions
+    if (validated.Value.Status !== true || !['completed', 'successful', 'success'].includes(validated.Value.Data.Status.toLowerCase())) {
+      return errorResponse('Webhook ignored: Transaction status is not completed', 400);
+    }
+
+    const { OrderId, Id, Amount, Channel, NgnVirtualBankAccountNumber } = validated.Value.Data;
+
     let merchantId = '';
     let paymentLinkId: string | null = null;
     let virtualAccountId: string | null = null;
     let description = '';
 
-    if (validated.type === 'payment_link') {
-      const paymentLink = await prisma.paymentLink.findUnique({
-        where: { id: validated.id },
+    // 1. Look up PaymentLink by OrderId (reference match)
+    let paymentLink = null;
+    if (OrderId) {
+      paymentLink = await prisma.paymentLink.findFirst({
+        where: { reference: OrderId },
       });
-      if (!paymentLink) {
-        return errorResponse('Payment link not found', 404);
-      }
+    }
+
+    if (paymentLink) {
       merchantId = paymentLink.merchantId;
       paymentLinkId = paymentLink.id;
       description = `Payment from customer via ALATPay Link (Ref: ${paymentLink.purpose})`;
-    } else if (validated.type === 'virtual_account') {
-      const virtualAccount = await prisma.virtualAccount.findUnique({
-        where: { id: validated.id },
-      });
-      if (!virtualAccount) {
-        return errorResponse('Virtual account not found', 404);
-      }
-      merchantId = virtualAccount.merchantId;
-      virtualAccountId = virtualAccount.id;
-      description = `Direct Wema/ALAT Transfer to Customer Virtual Account (${virtualAccount.customerName})`;
     } else {
-      return errorResponse('Invalid webhook collection type', 400);
+      // 2. Check VirtualAccount fallback lookup if OrderId is empty or not matching
+      let virtualAccount = null;
+      if (NgnVirtualBankAccountNumber) {
+        virtualAccount = await prisma.virtualAccount.findUnique({
+          where: { accountNumber: NgnVirtualBankAccountNumber },
+        });
+      } else if (OrderId) {
+        // Fallback: sometimes the accountNumber is passed in OrderId field during direct transfers
+        virtualAccount = await prisma.virtualAccount.findUnique({
+          where: { accountNumber: OrderId },
+        });
+      }
+
+      if (virtualAccount) {
+        merchantId = virtualAccount.merchantId;
+        virtualAccountId = virtualAccount.id;
+        description = `Direct Wema/ALAT Transfer to Customer Virtual Account (${virtualAccount.customerName})`;
+      } else {
+        // 3. Reject unmatched webhooks immediately
+        return errorResponse('Webhook ignored: Unmatched transaction reference or virtual account number', 404);
+      }
     }
 
     // Run database updates inside an atomic ACID transaction
@@ -68,22 +87,22 @@ export async function POST(req: NextRequest) {
       await tx.transaction.create({
         data: {
           merchantId,
-          amount: validated.amount,
+          amount: Amount,
           type: 'INCOME',
           category: 'Collections',
           description,
           source: 'ALATPAY',
-          paymentMethod: validated.paymentMethod || 'TRANSFER',
+          paymentMethod: Channel.toLowerCase().includes('card') ? 'CARD' : 'TRANSFER',
           direction: 'INFLOW',
           status: 'COMPLETED',
-          externalReference: validated.reference,
+          externalReference: Id || OrderId || `ALAT-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
           paymentLinkId,
           virtualAccountId,
         },
       });
 
       // If it's a payment link checkout, update status to PAID
-      if (validated.type === 'payment_link' && paymentLinkId) {
+      if (paymentLinkId) {
         await tx.paymentLink.update({
           where: { id: paymentLinkId },
           data: { status: 'PAID' },
@@ -99,7 +118,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    console.log(`Successfully ingested ALATPay payment event for reference: ${validated.reference}`);
+    console.log(`Successfully ingested ALATPay payment event for reference: ${Id}`);
     return successResponse({ message: 'Webhook processed successfully' });
   } catch (err: any) {
     // Handle unique constraint violations gracefully for idempotency (Prisma Error P2002)

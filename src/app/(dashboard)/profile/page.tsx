@@ -236,7 +236,7 @@ export default function ProfilePage() {
         <p className="text-xs text-slate-500 max-w-sm">{error ?? 'Something went wrong.'}</p>
         <button
           onClick={loadProfile}
-          className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors mt-2"
+          className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors mt-2"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Retry loading
@@ -259,7 +259,7 @@ export default function ProfilePage() {
         
         <form onSubmit={handleSave} className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 md:p-6 space-y-5">
           <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center gap-1.5">
-            <Building className="w-4 h-4 text-emerald-600 shrink-0" />
+            <Building className="w-4 h-4 text-primary shrink-0" />
             Business Details
           </h3>
 
@@ -292,7 +292,7 @@ export default function ProfilePage() {
                 value={form.businessName}
                 onChange={(e) => handleFieldChange('businessName', e.target.value)}
                 disabled={saving}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 transition-shadow"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-slate-50 transition-shadow"
               />
               {formErrors.businessName && (
                 <p className="text-[10px] text-red-600 mt-1 font-medium">{formErrors.businessName}</p>
@@ -311,7 +311,7 @@ export default function ProfilePage() {
                 onChange={(e) => handleFieldChange('businessType', e.target.value)}
                 disabled={saving}
                 placeholder="e.g. Sole Proprietorship, Ltd"
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 transition-shadow"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-slate-50 transition-shadow"
               />
               {formErrors.businessType && (
                 <p className="text-[10px] text-red-600 mt-1 font-medium">{formErrors.businessType}</p>
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                 onChange={(e) => handleFieldChange('businessCategory', e.target.value)}
                 disabled={saving}
                 placeholder="e.g. Retail, Food & Beverage"
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 transition-shadow"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-slate-50 transition-shadow"
               />
               {formErrors.businessCategory && (
                 <p className="text-[10px] text-red-600 mt-1 font-medium">{formErrors.businessCategory}</p>
@@ -349,7 +349,7 @@ export default function ProfilePage() {
                 onChange={(e) => handleFieldChange('location', e.target.value)}
                 disabled={saving}
                 placeholder="e.g. Lagos, Nigeria"
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 transition-shadow"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-slate-50 transition-shadow"
               />
               {formErrors.location && (
                 <p className="text-[10px] text-red-600 mt-1 font-medium">{formErrors.location}</p>
@@ -362,7 +362,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={!hasChanged || hasErrors || saving}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-primary hover:bg-primary-hover disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-lg transition-colors cursor-pointer"
             >
               {saving ? (
                 <>
@@ -385,11 +385,11 @@ export default function ProfilePage() {
           {/* Shareable Passport Link Card */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-              Business Trust Passport
+              <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
+              Business Reliability Passport
             </h3>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Generate a shareable public passport certifying your business trust score and consistency for lenders. Cash balances and transaction listings are completely masked.
+              Generate a shareable public passport certifying your business reliability metrics and consistency. Share it securely with potential financing partners, suppliers, cooperatives, or relationship managers while masking individual transactions and cash balances.
             </p>
             <div className="space-y-2">
               <button
@@ -400,16 +400,16 @@ export default function ProfilePage() {
                   setPassportCopied(true);
                   setTimeout(() => setPassportCopied(false), 2000);
                 }}
-                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-primary-light hover:bg-primary-light/80 text-primary rounded-lg border border-violet-100 transition-colors"
               >
                 {passportCopied ? (
                   <>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                     Passport Link Copied!
                   </>
                 ) : (
                   <>
-                    <Copy className="w-3.5 h-3.5 text-emerald-600" />
+                    <Copy className="w-3.5 h-3.5 text-primary" />
                     Copy Passport Link
                   </>
                 )}
@@ -428,7 +428,7 @@ export default function ProfilePage() {
           
           <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center gap-1.5">
-              <User className="w-4 h-4 text-emerald-600 shrink-0" />
+              <User className="w-4 h-4 text-primary shrink-0" />
               Account Info
             </h3>
 
@@ -486,7 +486,7 @@ export default function ProfilePage() {
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-sm animate-in zoom-in-95 duration-200">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl animate-in zoom-in-95 duration-200">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600 shrink-0">
                 <LogOut className="w-5 h-5" />

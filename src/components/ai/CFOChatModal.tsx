@@ -15,7 +15,7 @@ interface CFOChatModalProps {
 
 export function CFOChatModal({ isOpen, onClose }: CFOChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hello! I am your OPay Financial Assistant. How can I help you optimize your business today?' }
+    { role: 'assistant', content: 'Hello! I am your MerchantIQ AI CFO. How can I help you optimize your business today?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +63,7 @@ export function CFOChatModal({ isOpen, onClose }: CFOChatModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-card border border-border w-full max-w-2xl rounded-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 max-h-[85vh]">
+      <div className="bg-card border border-border w-full max-w-2xl rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 max-h-[85vh]">
         
         <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30">
           <div className="flex items-center gap-3">

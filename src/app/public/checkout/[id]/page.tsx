@@ -14,6 +14,7 @@ import {
   User,
   ShoppingBag
 } from 'lucide-react';
+import { useToast } from '@/components/ui/toast';
 
 interface PaymentLinkData {
   id: string;
@@ -32,6 +33,7 @@ interface PaymentLinkData {
 export default function MockCheckoutPage() {
   const params = useParams();
   const id = params.id as string;
+  const { success, error: toastError } = useToast();
 
   const [paymentLink, setPaymentLink] = useState<PaymentLinkData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,35 +89,46 @@ export default function MockCheckoutPage() {
 
     setPaying(true);
     try {
-      const res = await fetch('/api/webhooks/alatpay', {
+      const res = await fetch('/api/demo/simulate-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          event: 'payment.success',
-          type: 'payment_link',
-          id: paymentLink.id,
-          reference: paymentLink.reference,
-          amount: paymentLink.amount,
-          paymentMethod: paymentMethod,
+          Value: {
+            Status: true,
+            Message: 'Success',
+            Data: {
+              Amount: paymentLink.amount,
+              OrderId: paymentLink.reference,
+              Id: `MOCK-TX-${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
+              Channel: paymentMethod === 'CARD' ? 'Card' : 'Bank Transfer',
+              Status: 'completed',
+              Customer: {
+                Email: 'customer@merchantiq.app',
+                FirstName: paymentLink.customerName.split(' ')[0],
+                LastName: paymentLink.customerName.split(' ')[1] || 'Customer',
+              }
+            }
+          }
         }),
       });
 
       const json = await res.json();
       if (res.ok && json.success) {
         setPaid(true);
+        success('Payment simulation successful!');
         setNotification({
           show: true,
           amount: paymentLink.amount,
           customerName: paymentLink.customerName,
         });
       } else {
-        alert(json.error || 'Payment simulation failed.');
+        toastError(json.error || 'Payment simulation failed.');
       }
     } catch (err) {
       console.error(err);
-      alert('Network error occurred during payment simulation.');
+      toastError('Network error occurred during payment simulation.');
     } finally {
       setPaying(false);
     }
