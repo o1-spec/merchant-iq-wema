@@ -54,9 +54,10 @@ body {
    Premium Light-Fintech Theme Global Overrides
    ========================================== */
 
-body {
+html, body {
   background-color: var(--background) !important;
   color: var(--foreground) !important;
+  min-height: 100vh;
 }
 
 /* Unify all primary button and active nav backgrounds to brand purple */

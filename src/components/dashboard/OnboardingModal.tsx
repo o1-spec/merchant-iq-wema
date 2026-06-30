@@ -17,12 +17,12 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const steps = [
     {
       title: 'Welcome to MerchantIQ',
-      description: 'MerchantIQ helps you understand your business health and creditworthiness directly from transaction data.',
+      description: 'MerchantIQ helps you understand your business health and credit readiness directly from transaction data.',
       icon: Sparkles,
       color: 'text-primary bg-primary-light border-primary-light/50',
       features: [
         'Automated collections bookkeeping – sync ALATPay transactions directly.',
-        'Alternative Business Trust Score – prove your creditworthiness to lenders.',
+        'Alternative Business Trust Score – prove your Credit Readiness to lenders.',
         'Simple English – zero complex corporate financial jargon.',
       ]
     },
@@ -52,7 +52,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       features: [
         'Runway forecast – see exactly how many days your cash position will last.',
         '30-Day Cash Forecast – project month-end cash position based on transaction trends.',
-        'Circular Trust Dial – track your business trust score rating (300-850 scale).',
+        'Circular Trust Dial – track your MerchantIQ Trust Score (300-850 scale).',
       ]
     },
     {
@@ -100,7 +100,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const StepIcon = currentStep.icon;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 w-screen h-screen z-9999 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-xl w-full overflow-hidden relative transition-all duration-300 transform animate-in fade-in zoom-in-95 slide-in-from-bottom-8">
 
         {/* Top bar with Skip/Close */}
