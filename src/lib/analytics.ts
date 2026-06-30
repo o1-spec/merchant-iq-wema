@@ -200,6 +200,17 @@ export function calculateSummary(transactions: TransactionData[]): SummaryData {
 export function calculateCashflow(transactions: TransactionData[], referenceDate: Date = new Date()): CashflowData {
   const completed = transactions.filter(t => t.status === 'COMPLETED');
 
+  if (completed.length === 0) {
+    return {
+      currentCash: 0,
+      averageDailyInflow: 0,
+      averageDailyOutflow: 0,
+      runwayDays: 0,
+      riskLevel: 'HIGH',
+      warning: 'No completed transactions found. Connect ALATPay or upload statement files to begin.',
+    };
+  }
+
   let totalInflow = 0;
   let totalOutflow = 0;
   for (const t of completed) {
@@ -264,6 +275,24 @@ export function calculateCashflow(transactions: TransactionData[], referenceDate
 
 export function calculateBusinessHealth(transactions: TransactionData[], referenceDate: Date = new Date()): BusinessHealthData {
   const completed = transactions.filter(t => t.status === 'COMPLETED');
+
+  if (completed.length === 0) {
+    return {
+      score: 0,
+      riskLevel: 'HIGH',
+      strengths: [],
+      weaknesses: ['No transaction records found in ledger.'],
+      nextSteps: ['Sync ALATPay collections or upload statements to start calculating your score.'],
+      breakdown: {
+        consistency: 0,
+        cashflow: 0,
+        stability: 0,
+        growth: 0,
+        credit: 0,
+      }
+    };
+  }
+
   const now = referenceDate;
 
   // 1. Consistency (20 points max)
