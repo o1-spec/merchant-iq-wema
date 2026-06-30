@@ -414,7 +414,7 @@ export default function DashboardPage() {
               <p className="text-xs font-bold text-slate-100 leading-normal">
                 Follow up with {collections?.statusBreakdown.pending || 3} pending payment links worth {fmt(collections?.pendingAmount || 340000)}.
               </p>
-              <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
+              <p className="text-[11px] text-violet-200 leading-relaxed font-semibold">
                 Recovering these collections will increase your cash runway by approximately {Math.round((collections?.pendingAmount || 340000) / Math.max(1, cashflow.averageDailyOutflow || 8000)) || 9} days and boost your Business Trust Passport rating.
               </p>
               <div className="pt-1.5">
