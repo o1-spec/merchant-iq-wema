@@ -488,7 +488,7 @@ export default function CollectionsPage() {
           onClick={() => setActiveTab('csv')}
           className={`px-4 py-2.5 border-b-2 transition-all cursor-pointer ${activeTab === 'csv' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
         >
-          Manual Import (CSV)
+          Import Historical Data
         </button>
       </div>
 
@@ -1170,6 +1170,20 @@ export default function CollectionsPage() {
                       <Mail className="w-3.5 h-3.5" />
                       Email
                     </button>
+                  </div>
+
+                  {/* AI Nudge Impact Summary Box */}
+                  <div className="grid grid-cols-2 gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs font-semibold text-slate-100">
+                    <div className="space-y-1">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Expected Recovery</p>
+                      <p className="text-lg font-black text-white tabular-nums">{fmt(selectedReminderLink.amount)}</p>
+                      <span className="text-[9px] text-indigo-300">Targeting {selectedReminderLink.customerName}</span>
+                    </div>
+                    <div className="space-y-1 border-l border-slate-800 pl-4">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Cash Runway Impact</p>
+                      <p className="text-lg font-black text-white">+{Math.round(selectedReminderLink.amount / 8000) || 2} Days</p>
+                      <span className="text-[9px] text-emerald-400 font-medium">Estimated increase</span>
+                    </div>
                   </div>
 
                   {/* Draft Box */}

@@ -386,10 +386,10 @@ export default function ProfilePage() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-              Business Trust Passport
+              Business Reliability Passport
             </h3>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Generate a shareable public passport certifying your business trust score and consistency for lenders. Cash balances and transaction listings are completely masked.
+              Generate a shareable public passport certifying your business reliability metrics and consistency. Share it securely with potential financing partners, suppliers, cooperatives, or relationship managers while masking individual transactions and cash balances.
             </p>
             <div className="space-y-2">
               <button

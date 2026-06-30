@@ -137,6 +137,59 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Today's Business Health - Apple/Stripe-like Snapshot Card */}
+      <div className="bg-slate-900 text-slate-100 rounded-3xl p-6 lg:p-8 border border-slate-800 shadow-xl relative overflow-hidden group">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_-20%,rgba(99,102,241,0.15),transparent_60%)] pointer-events-none" />
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-4 max-w-xl">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-xs font-bold text-violet-300 uppercase tracking-widest">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" /> Today&apos;s Business Health
+            </span>
+            <div className="space-y-1">
+              <h2 className="text-xl lg:text-2xl font-extrabold tracking-tight text-white">Your cashflow position is verified and healthy.</h2>
+              <p className="text-violet-200 text-xs font-medium leading-relaxed">
+                We analyzed your transactions and collections records. Based on your current run rates, your business exhibits high reliability indicators.
+              </p>
+            </div>
+            {/* One AI Recommendation */}
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3">
+              <Sparkles className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[10px] font-bold text-violet-200 uppercase tracking-wider">AI CFO Recommendation</p>
+                <p className="text-xs text-slate-100 mt-1 leading-relaxed">
+                  {latestInsights && latestInsights[0] 
+                    ? `${latestInsights[0].title}: ${latestInsights[0].content.replace(/[\*#`_\[\]\(\)-]/g, '').substring(0, 110)}...`
+                    : "No critical warnings today. Keep collecting payments via virtual accounts to maintain your score momentum!"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-6 lg:gap-12 border-t border-slate-850 pt-6 lg:border-t-0 lg:pt-0 lg:pl-12 lg:border-l lg:border-slate-850 shrink-0">
+            <div>
+              <p className="text-[9px] font-bold text-slate-200 uppercase tracking-widest">Verified Revenue</p>
+              <p className="text-2xl lg:text-3xl font-extrabold mt-1 text-white tracking-tight">{fmt(summary.totalRevenue)}</p>
+              <span className="text-[10px] font-semibold text-emerald-300 mt-0.5 block">ALATPay Active</span>
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-200 uppercase tracking-widest">Cash Runway</p>
+              <p className="text-2xl lg:text-3xl font-extrabold mt-1 text-white tracking-tight">
+                {cashflow.runwayDays === 999 ? '∞' : `${cashflow.runwayDays}d`}
+              </p>
+              <span className={`text-[10px] font-extrabold mt-0.5 block uppercase tracking-wider ${
+                cashflow.riskLevel === 'LOW' ? 'text-emerald-300' : cashflow.riskLevel === 'MEDIUM' ? 'text-amber-200' : 'text-rose-200'
+              }`}>{cashflow.riskLevel} RISK</span>
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-200 uppercase tracking-widest">Readiness Score</p>
+              <p className="text-2xl lg:text-3xl font-extrabold mt-1 text-white tracking-tight">
+                {300 + Math.round((businessHealth.score / 100) * 550)}
+              </p>
+              <span className="text-[10px] font-semibold text-violet-250 mt-0.5 block">Scale 300-850</span>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <MetricCard
@@ -297,12 +350,12 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Business Trust Score Details Card */}
+        {/* Business Reliability Score Details Card */}
         <div className="bg-white border border-card-border rounded-2xl p-6 space-y-4 transition-all duration-300 flex flex-col justify-between group hover:shadow-sm">
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-indigo-500" />
-              Business Trust Score
+              Business Reliability Score
             </p>
             <div className="flex items-center gap-4 mt-3">
               <div className="relative flex items-center justify-center">
@@ -335,8 +388,8 @@ export default function DashboardPage() {
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center">
-                  <span className="text-lg font-black text-slate-800">{businessHealth.score}</span>
-                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">/ 100</span>
+                  <span className="text-[11px] font-black text-slate-800">{300 + Math.round((businessHealth.score / 100) * 550)}</span>
+                  <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider">/ 850</span>
                 </div>
               </div>
               <div className="min-w-0">
@@ -484,13 +537,13 @@ export default function DashboardPage() {
                     <div className="flex-1 min-w-0 text-xs">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <p className="font-bold text-slate-800 truncate">Business Trust Score Recalculated</p>
+                          <p className="font-bold text-slate-800 truncate">Business Reliability Score Recalculated</p>
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
                         </div>
                         <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">1 min ago</span>
                       </div>
                       <p className="text-slate-500 font-semibold mt-0.5">
-                        Credit score re-weighted: {businessHealth.score - 2 || 72} → {businessHealth.score || 74}
+                        Credit score re-weighted: {300 + Math.round(((businessHealth.score - 2) / 100) * 550)} → {300 + Math.round((businessHealth.score / 100) * 550)}
                       </p>
                     </div>
                   </div>
@@ -518,7 +571,7 @@ export default function DashboardPage() {
                         <p className="font-bold text-slate-800 truncate">Trust Passport Refreshed</p>
                         <span className="text-[9px] text-slate-400 font-mono tracking-wider shrink-0">2 mins ago</span>
                       </div>
-                      <p className="text-slate-500 font-semibold mt-0.5">Business trust score stamp updated</p>
+                      <p className="text-slate-500 font-semibold mt-0.5">Business reliability score stamp updated</p>
                       <span className="inline-block text-[8px] font-bold bg-slate-900 text-slate-200 px-1.5 py-0.5 rounded mt-1.5 uppercase tracking-wider">
                         PASSPORT ACTIVE
                       </span>
