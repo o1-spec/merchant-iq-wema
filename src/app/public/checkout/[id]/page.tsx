@@ -14,6 +14,7 @@ import {
   User,
   ShoppingBag
 } from 'lucide-react';
+import { useToast } from '@/components/ui/toast';
 
 interface PaymentLinkData {
   id: string;
@@ -32,6 +33,7 @@ interface PaymentLinkData {
 export default function MockCheckoutPage() {
   const params = useParams();
   const id = params.id as string;
+  const { success, error: toastError } = useToast();
 
   const [paymentLink, setPaymentLink] = useState<PaymentLinkData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -115,17 +117,18 @@ export default function MockCheckoutPage() {
       const json = await res.json();
       if (res.ok && json.success) {
         setPaid(true);
+        success('Payment simulation successful!');
         setNotification({
           show: true,
           amount: paymentLink.amount,
           customerName: paymentLink.customerName,
         });
       } else {
-        alert(json.error || 'Payment simulation failed.');
+        toastError(json.error || 'Payment simulation failed.');
       }
     } catch (err) {
       console.error(err);
-      alert('Network error occurred during payment simulation.');
+      toastError('Network error occurred during payment simulation.');
     } finally {
       setPaying(false);
     }

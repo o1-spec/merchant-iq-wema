@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, AlertCircle, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { register } from '@/lib/auth-client';
 import { AuthLeftPanel } from '@/components/auth/AuthLeftPanel';
+import { useToast } from '@/components/ui/toast';
 
 const BUSINESS_TYPES = ['Retail', 'Wholesale'];
 const BUSINESS_CATEGORIES = [
@@ -101,6 +102,8 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { success, error: toastError } = useToast();
+
   const [form, setForm] = useState<FormState>({
     name: '', email: '', password: '', confirmPassword: '',
     businessName: '', businessType: '', businessCategory: '', location: '',
@@ -133,7 +136,10 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setApiError('');
-    if (!validate()) return;
+    if (!validate()) {
+      toastError('Please fix the validation errors before signing up.');
+      return;
+    }
     loading || setLoading(true);
     try {
       await register({
@@ -142,9 +148,12 @@ export default function RegisterPage() {
         businessType: form.businessType, businessCategory: form.businessCategory,
         location: form.location.trim(),
       });
+      success('Account created successfully!');
       router.push('/dashboard');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+      const errMsg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+      setApiError(errMsg);
+      toastError(errMsg);
     } finally {
       setLoading(false);
     }

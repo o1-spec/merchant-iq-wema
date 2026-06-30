@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { login } from '@/lib/auth-client';
 import { AuthLeftPanel } from '@/components/auth/AuthLeftPanel';
+import { useToast } from '@/components/ui/toast';
 
 function Field({
   label,
@@ -71,6 +72,7 @@ function Field({
 
 export default function LoginPage() {
   const router = useRouter();
+  const { success, error: toastError } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -91,13 +93,19 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setApiError('');
-    if (!validate()) return;
+    if (!validate()) {
+      toastError('Please fix the validation errors before signing in.');
+      return;
+    }
     setLoading(true);
     try {
       await login({ email: email.trim().toLowerCase(), password });
+      success('Logged in successfully!');
       router.push('/dashboard');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+      const errMsg = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      setApiError(errMsg);
+      toastError(errMsg);
     } finally {
       setLoading(false);
     }
