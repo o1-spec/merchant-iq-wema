@@ -184,8 +184,11 @@ export function Topbar({ merchantName, businessCategory, onMobileMenuToggle }: T
         </div>
 
         
-        <div className="flex items-center gap-2.5 pl-2 border-l border-slate-100 ml-1">
-          <div className="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold text-xs shrink-0">
+        <Link
+          href="/profile"
+          className="flex items-center gap-2.5 pl-2 border-l border-slate-100 ml-1 hover:opacity-85 transition-opacity"
+        >
+          <div className="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold text-xs shrink-0 select-none">
             {initials}
           </div>
           <div className="hidden sm:block">
@@ -194,7 +197,7 @@ export function Topbar({ merchantName, businessCategory, onMobileMenuToggle }: T
               <p className="text-xs text-slate-400 mt-0.5 leading-none">{businessCategory}</p>
             )}
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );
