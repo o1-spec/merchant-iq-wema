@@ -15,7 +15,7 @@ interface CFOChatModalProps {
 
 export function CFOChatModal({ isOpen, onClose }: CFOChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hello! I am your OPay Financial Assistant. How can I help you optimize your business today?' }
+    { role: 'assistant', content: 'Hello! I am your MerchantIQ AI CFO. How can I help you optimize your business today?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);

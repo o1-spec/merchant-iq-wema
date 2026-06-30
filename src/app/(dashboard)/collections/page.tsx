@@ -29,7 +29,8 @@ import {
   Mail,
   User,
   ShieldCheck,
-  Coins
+  Coins,
+  Search
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import {
@@ -132,6 +133,7 @@ export default function CollectionsPage() {
   } | null>(null);
 
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   async function loadData() {
     setLoadingData(true);
@@ -818,8 +820,23 @@ export default function CollectionsPage() {
           </div>
 
           {/* Virtual Accounts Listing */}
-          <div className="lg:col-span-2 bg-white border border-card-border rounded-2xl p-5 space-y-4">
-            <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Customer Virtual Accounts</h2>
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Customer Virtual Accounts</h2>
+              
+              {virtualAccounts.length > 0 && (
+                <div className="relative max-w-xs w-full">
+                  <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search customer or account..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary rounded-xl pl-8.5 pr-3 py-1.5 text-xs text-slate-800 outline-none transition-colors"
+                  />
+                </div>
+              )}
+            </div>
 
             {virtualAccounts.length === 0 ? (
               <div className="border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center space-y-2">
@@ -827,35 +844,51 @@ export default function CollectionsPage() {
                 <p className="text-slate-600 font-bold text-sm">No virtual accounts provisioned</p>
                 <p className="text-xs text-slate-400">Customer account listings will appear here.</p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
-                {virtualAccounts.map(account => (
-                  <div key={account.id} className="border border-card-border rounded-2xl p-4 bg-slate-50/40 space-y-3.5 flex flex-col justify-between hover:border-slate-300 transition-colors">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-slate-400" />
-                        <span className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">{account.customerName}</span>
-                      </div>
-                      <div className="space-y-0.5">
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Account Details</p>
-                        <p className="text-base font-black text-slate-900 font-mono tracking-wider mt-0.5">{account.accountNumber}</p>
-                        <p className="text-[10px] text-rose-600 font-extrabold uppercase">{account.bankName}</p>
-                      </div>
-                    </div>
+            ) : (() => {
+              const filtered = virtualAccounts.filter(account =>
+                account.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                account.accountNumber.includes(searchQuery)
+              );
 
-                    <button
-                      onClick={() => {
-                        setSelectedAccount(account);
-                        setShowTransferModal(true);
-                      }}
-                      className="w-full py-2 border border-rose-600 hover:bg-rose-50/20 text-rose-600 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
-                    >
-                      Simulate Inbound Payment
-                    </button>
+              if (filtered.length === 0) {
+                return (
+                  <div className="border border-dashed border-slate-200 rounded-2xl p-12 text-center space-y-2 bg-slate-50/50">
+                    <p className="text-slate-600 font-bold text-sm">No results match your search</p>
+                    <p className="text-xs text-slate-400">Try searching for a different customer name or account number.</p>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
+                  {filtered.map(account => (
+                    <div key={account.id} className="border border-card-border rounded-2xl p-4 bg-slate-50/40 space-y-3.5 flex flex-col justify-between hover:border-slate-300 transition-colors">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-slate-400" />
+                          <span className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">{account.customerName}</span>
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Account Details</p>
+                          <p className="text-base font-black text-slate-900 font-mono tracking-wider mt-0.5">{account.accountNumber}</p>
+                          <p className="text-[10px] text-rose-600 font-extrabold uppercase">{account.bankName}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setSelectedAccount(account);
+                          setShowTransferModal(true);
+                        }}
+                        className="w-full py-2 border border-rose-600 hover:bg-rose-50/20 text-rose-600 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
+                      >
+                        Simulate Inbound Payment
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
