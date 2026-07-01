@@ -419,7 +419,7 @@ export default function MockCheckoutPage() {
                     <p className="text-xs font-extrabold text-rose-600">Wema / ALAT Bank</p>
                   </div>
                   <p className="text-[10px] text-slate-450 leading-relaxed font-semibold">
-                    Simulate making a transfer to the account number above by pressing the pay button below.
+                    Please make a bank transfer to the account details above, then click the confirm button below to finalize.
                   </p>
                 </div>
               )}

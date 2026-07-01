@@ -753,7 +753,7 @@ export default function CollectionsPage() {
                               target="_blank"
                               rel="noreferrer"
                               className="p-2 border border-slate-200 hover:bg-slate-50 text-slate-550 hover:text-slate-800 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
-                              title="Open simulated ALATPay checkout"
+                              title="Open ALATPay Checkout"
                             >
                               <ExternalLink className="w-4 h-4" />
                             </a>
@@ -882,7 +882,7 @@ export default function CollectionsPage() {
                         }}
                         className="w-full py-2 border border-rose-600 hover:bg-rose-50/20 text-rose-600 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
                       >
-                        Simulate Inbound Payment
+                        Test Inbound Transfer
                       </button>
                     </div>
                   ))}
@@ -1031,8 +1031,8 @@ export default function CollectionsPage() {
                 <Building className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">Simulate Transfer to Virtual Account</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Mock Wema/ALAT virtual credit webhook for {selectedAccount.customerName}.</p>
+                <h3 className="font-bold text-slate-900 text-sm">Sandbox Transfer Test</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Trigger a sandbox credit event to test the webhook and ledger logic for {selectedAccount.customerName}.</p>
               </div>
             </div>
 
@@ -1050,7 +1050,7 @@ export default function CollectionsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Simulated Payment Method</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sandbox Payment Channel</label>
                 <select
                   value={transferMethod}
                   onChange={e => setTransferMethod(e.target.value as any)}
